@@ -1,0 +1,43 @@
+# Cấu hình Server
+server:
+  port: 8080
+
+spring:
+  application:
+    name: Pet
+
+  # Cấu hình phân trang (Pageable)
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+
+  datasource:
+    # URL kết nối MySQL, mặc định database tên là pet18
+    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/pet18?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+
+# Cấu hình mã hóa Token (JWT)
+jwt:
+  secret: ${JWT_SECRET:8qGqxtSyHo1jjFC8UkwX4fCr9jQbrTzlRJ28NgyXK4M}
+  access:
+    expiration_time: 3600000
+  refresh:
+    expiration_time: 864000000
+
+
+# Cấu hình đường dẫn lưu trữ file upload
+hoang:
+  upload-file:
+    base-uri: D:/BackendJava2026/upload/

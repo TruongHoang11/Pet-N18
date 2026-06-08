@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # PET_18 — Ứng dụng quản lý cửa hàng thú cưng
 
 Phiên bản ngắn gọn bằng tiếng Việt hướng dẫn nhanh cách chạy, cấu trúc và các endpoint quan trọng.
@@ -136,3 +137,6 @@ GET /api/v1/users?filter=role.name:role_admin,name~*B*&page=0&size=5
 
 Nếu bạn muốn, tôi có thể cập nhật README này với hướng dẫn deploy Docker, ví dụ cấu hình môi trường production, hoặc bản tóm tắt API chi tiết (Swagger). Cho tôi biết bạn muốn bổ sung gì.
 
+=======
+# Pet-N18
+>>>>>>> 34d5cc4dbad5b93cc6d883591fbb0209431e29cf

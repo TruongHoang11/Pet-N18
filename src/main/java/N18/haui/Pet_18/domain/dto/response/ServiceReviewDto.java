@@ -8,10 +8,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class ServiceReviewDto {
-
     private Long id;
     private Long serviceId;
-    private Long userId;
+    private String userId;
     private String userName;
     private Integer rating;
     private String comment;

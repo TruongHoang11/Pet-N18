@@ -158,4 +158,18 @@ public class UrlConstant {
     private PetServiceReviews() {}
   }
 
+  public static class Booking {
+    private static final String PRE_FIX = "/bookings";
+
+    public static final String CREATE_BOOKING = PRE_FIX;
+    public static final String GET_BOOKING = PRE_FIX + "/{id}";
+    public static final String GET_MY_BOOKINGS = PRE_FIX + "/my-bookings";
+    public static final String GET_BOOKINGS_BY_STATUS = PRE_FIX + "/by-status";
+    public static final String GET_ALL_BOOKINGS = PRE_FIX + "/all";
+    public static final String CANCEL_BOOKING = PRE_FIX + "/{id}/cancel";
+    public static final String UPDATE_BOOKING_STATUS = PRE_FIX + "/{id}/status";
+
+    private Booking() {}
+  }
+
 }

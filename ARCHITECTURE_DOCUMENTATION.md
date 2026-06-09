@@ -29,14 +29,14 @@ Dự án Pet-N18 sử dụng **Layered Architecture (Kiến Trúc Phân Tầng)*
 
 ### Mục Đích Của Mỗi Tầng:
 
-| Tầng | Trách Nhiệm | Công Nghệ |
-|------|-----------|----------|
-| **Controller** | Tiếp nhận HTTP requests, validate, trả về responses | Spring MVC Annotations |
-| **Service** | Xử lý business logic, transaction, validation | Spring Service, @Transactional |
-| **Repository** | Truy vấn database, CRUD operations | Spring Data JPA |
-| **Entity** | Định nghĩa cấu trúc bảng database | JPA Annotations, Lombok |
-| **DTO** | Định dạng data gửi/nhận từ client | Lombok, MapStruct Mapper |
-| **Mapper** | Chuyển đổi Entity ↔ DTO | MapStruct |
+| Tầng              | Trách Nhiệm                                         | Công Nghệ                      |
+|-------------------|-----------------------------------------------------|--------------------------------|
+| **Controller**    | Tiếp nhận HTTP requests, validate, trả về responses | Spring MVC Annotations         |
+| **Service**       | Xử lý business logic, transaction, validation       | Spring Service, @Transactional |
+| **Repository**    | Truy vấn database, CRUD operations                  | Spring Data JPA                |
+| **Entity**        | Định nghĩa cấu trúc bảng database                   | JPA Annotations, Lombok        |
+| **DTO**           | Định dạng data gửi/nhận từ client                   | Lombok, MapStruct Mapper       |
+| **Mapper**        | Chuyển đổi Entity ↔ DTO                             | MapStruct                      |
 
 ---
 

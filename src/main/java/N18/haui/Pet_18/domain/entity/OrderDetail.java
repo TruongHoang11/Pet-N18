@@ -31,13 +31,10 @@ public class OrderDetail extends DateAuditing {
     @Column(name = "unit_price",precision = 10, scale = 2)
     private BigDecimal unitPrice; // gia ban tai thoi diem mua
 
-
-
     @ManyToOne
     @JoinColumn(name = "order_id")
     @JsonIgnore
     private Order order;
-
 
     @ManyToOne
     @JoinColumn(name = "product_id")

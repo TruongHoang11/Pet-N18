@@ -29,6 +29,4 @@ public interface PetService {
     ResultPaginationDto getAllPet(List<String> filter, Pageable pageable);
 
 
-
-
 }

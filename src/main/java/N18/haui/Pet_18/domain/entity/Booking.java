@@ -47,12 +47,7 @@ public class Booking extends FlagUserDateAuditing {
     @JoinColumn(name = "pet_id")
     private Pet pet;
 
-    @ManyToMany
-    @JoinTable(
-            name = "tbl_booking_service",
-            joinColumns = @JoinColumn(name = "booking_id"),
-            inverseJoinColumns = @JoinColumn(name = "service_id")
-    )
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
     private List<PetService> services;
 
     @ManyToOne

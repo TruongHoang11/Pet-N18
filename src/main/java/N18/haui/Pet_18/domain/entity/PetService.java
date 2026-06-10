@@ -53,9 +53,6 @@ public class PetService extends FlagUserDateAuditing {
     private Category category;
 
     @OneToMany(mappedBy = "petService")
-    private List<ProductReview> reviews;
-
-    @OneToMany(mappedBy = "petService")
     private List<PetServiceImage> serviceImages;
 
 

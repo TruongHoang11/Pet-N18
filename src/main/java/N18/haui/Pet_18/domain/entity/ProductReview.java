@@ -31,7 +31,5 @@ public class ProductReview extends FlagUserDateAuditing {
     @Column(columnDefinition = "TEXT")
     private String comment; // Nội dung nhận xét của khách hàng
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_id", nullable = false)
-    private PetService petService; // Dịch vụ được đánh giá
+
 }

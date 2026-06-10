@@ -122,20 +122,16 @@ public class UrlConstant {
   }
 
   public static class PetService {
-    private static final String PRE_FIX = "/petservices";
-    private static final String ADMIN_PRE_FIX = "/admin/petservices";
+    private static final String PRE_FIX = "/services";
 
-    // User
-    public static final String GET_MY_PET_SERVICES = PRE_FIX + "/my-pets";
-    public static final String GET_PET_SERVICE_DETAIL = PRE_FIX + "/{id}";
-    public static final String CREATE_PET_SERVICE = PRE_FIX;
-    public static final String UPDATE_PET_SERVICE = PRE_FIX;
-    public static final String DELETE_PET_SERVICE = PRE_FIX + "/{id}";
-
-    // Admin
-    public static final String GET_ALL_PET_SERVICES = ADMIN_PRE_FIX;
-    public static final String PATCH_DEACTIVATE_PET_SERVICE = ADMIN_PRE_FIX + "/{id}/deactivate";
-    public static final String PATCH_ACTIVATE_PET_SERVICE = ADMIN_PRE_FIX + "/{id}/activate";
+    public static final String CREATE_SERVICE = PRE_FIX;
+    public static final String UPDATE_SERVICE = PRE_FIX;
+    public static final String GET_SERVICE = PRE_FIX + "/{id}";
+    public static final String GET_ALL_SERVICES = PRE_FIX;
+    public static final String SEARCH_SERVICES = PRE_FIX + "/search";
+    public static final String GET_SERVICES_BY_CATEGORY = PRE_FIX + "/category/{categoryId}";
+    public static final String DELETE_SERVICE = PRE_FIX + "/{id}";
+    public static final String GET_TOP_SERVICES = PRE_FIX + "/top";
 
     private PetService() {}
   }
@@ -156,6 +152,41 @@ public class UrlConstant {
     public static final String GET_ALL_REVIEWS = ADMIN_PRE_FIX;
 
     private ProductReview() {}
+  public static class PetServiceImages {
+    private static final String PRE_FIX = "/service-images";
+
+    public static final String ADD_IMAGES = PRE_FIX;
+    public static final String DELETE_IMAGE = PRE_FIX + "/{id}";
+    public static final String GET_SERVICE_IMAGES = PRE_FIX + "/service/{serviceId}";
+    public static final String SET_MAIN_IMAGE = PRE_FIX + "/set-main-image";
+
+    private PetServiceImages() {}
+  }
+
+  public static class PetServiceReviews {
+    private static final String PRE_FIX = "/service-reviews";
+
+    public static final String CREATE_REVIEW = PRE_FIX;
+    public static final String DELETE_REVIEW = PRE_FIX + "/{id}";
+    public static final String GET_SERVICE_REVIEWS = PRE_FIX + "/service/{serviceId}";
+    public static final String GET_AVERAGE_RATING = PRE_FIX + "/{serviceId}/average-rating";
+    public static final String GET_REVIEW_COUNT = PRE_FIX + "/{serviceId}/count";
+
+    private PetServiceReviews() {}
+  }
+
+  public static class Booking {
+    private static final String PRE_FIX = "/bookings";
+
+    public static final String CREATE_BOOKING = PRE_FIX;
+    public static final String GET_BOOKING = PRE_FIX + "/{id}";
+    public static final String GET_MY_BOOKINGS = PRE_FIX + "/my-bookings";
+    public static final String GET_BOOKINGS_BY_STATUS = PRE_FIX + "/by-status";
+    public static final String GET_ALL_BOOKINGS = PRE_FIX + "/all";
+    public static final String CANCEL_BOOKING = PRE_FIX + "/{id}/cancel";
+    public static final String UPDATE_BOOKING_STATUS = PRE_FIX + "/{id}/status";
+
+    private Booking() {}
   }
 
 }

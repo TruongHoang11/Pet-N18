@@ -1,13 +1,15 @@
 package N18.haui.Pet_18.domain.entity;
 
-
 import N18.haui.Pet_18.domain.dto.common.FlagUserDateAuditing;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import N18.haui.Pet_18.constant.Status;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,6 +30,10 @@ public class PetService extends FlagUserDateAuditing {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "status", unique = true)
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @Column(name ="description")
     private String description;
 
@@ -38,9 +44,9 @@ public class PetService extends FlagUserDateAuditing {
     @Column(name = "duration_min")
     private int durationMin;
 
-    @ManyToMany(mappedBy = "services")
+    @OneToMany(mappedBy = "service")
     @JsonIgnore
-    private List<Booking> bookings;
+    private List<BookingDetail> bookingDetails;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

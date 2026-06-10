@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # PET_18 — Ứng dụng quản lý cửa hàng thú cưng
 
 Phiên bản ngắn gọn bằng tiếng Việt hướng dẫn nhanh cách chạy, cấu trúc và các endpoint quan trọng.
@@ -139,4 +139,3 @@ Nếu bạn muốn, tôi có thể cập nhật README này với hướng dẫn
 
 =======
 # Pet-N18
->>>>>>> 34d5cc4dbad5b93cc6d883591fbb0209431e29cf

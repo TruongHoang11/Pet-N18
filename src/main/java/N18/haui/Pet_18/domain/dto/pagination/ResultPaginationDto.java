@@ -9,7 +9,6 @@ public class ResultPaginationDto {
     private Meta meta;
     private Object result;
 
-
     @Getter
     @Setter
     public static class Meta {

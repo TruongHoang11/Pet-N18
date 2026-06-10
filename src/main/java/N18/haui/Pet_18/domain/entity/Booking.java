@@ -9,8 +9,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+// import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Getter
 @Setter
@@ -32,12 +36,15 @@ public class Booking extends FlagUserDateAuditing {
     @Column(name = "actual_price",precision = 10, scale = 2)
     private BigDecimal actualPrice; // gia thuc te thu cua khạc
 
+    @Column(name = "booking_date")
+    private LocalDate bookingDate; // Ngày khách hẹn, có thể dùng để
+
 
     @Column(name = "start_time")
-    private LocalDateTime startTime; // Khách hẹn lúc mấy giờ, ngày nào
+    private LocalTime startTime; // Khách hẹn lúc mấy giờ, ngày nào
 
     @Column(name = "end_time")
-    private LocalDateTime endTime; // Dự kiến xong lúc mấy giờ để hệ thống chặn không cho người khác đặt trùng
+    private LocalTime endTime; // Dự kiến xong lúc mấy giờ để hệ thống chặn không cho người khác đặt trùng
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -47,13 +54,9 @@ public class Booking extends FlagUserDateAuditing {
     @JoinColumn(name = "pet_id")
     private Pet pet;
 
-    @ManyToMany
-    @JoinTable(
-            name = "tbl_booking_service",
-            joinColumns = @JoinColumn(name = "booking_id"),
-            inverseJoinColumns = @JoinColumn(name = "service_id")
-    )
-    private List<PetService> services;
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<BookingDetail> bookingDetails; // Danh sách dịch vụ trong lịch hẹn đó
 
     @ManyToOne
     @JoinColumn(name = "staff_id")

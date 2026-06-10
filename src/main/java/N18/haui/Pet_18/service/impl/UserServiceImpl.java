@@ -69,7 +69,6 @@ public class UserServiceImpl implements UserService {
         createUser.setRole(defaultRole);
         userRepository.save(createUser);
 
-
         return userMapper.toUserDto(createUser);
     }
 
@@ -88,6 +87,8 @@ public class UserServiceImpl implements UserService {
         updateUser.setName(userUpdateDto.getName());
         updateUser.setDateOfBirth(userUpdateDto.getDateOfBirth());
         updateUser.setGender(GenderEnum.valueOf(userUpdateDto.getGender()));
+
+        updateUser.setCreatedBy(updateUser.getCreatedBy());
         userRepository.save(updateUser);
         return userMapper.toUserDto(updateUser);
     }
@@ -102,7 +103,6 @@ public class UserServiceImpl implements UserService {
         deleteUser.setDeleteFlag(true);
         userRepository.save(deleteUser);
         return new CommonResponseDto(true, "Delete user success");
-
     }
 
 
@@ -138,6 +138,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
+    public CommonResponseDto changeUserStatus(String id) {
+        User updateUser = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("User not found with id: " + id)
+        );
+        updateUser.setActiveFlag(!updateUser.getActiveFlag());
+        userRepository.save(updateUser);
+        return new CommonResponseDto(true, "Change user status success");
+    }
+
+    @Override
     public User getUserLogin() {
         String id = SecurityUtil.getCurrentUserLogin().orElseThrow(
                 () -> new UnauthorizedException("Login required")
@@ -162,5 +173,10 @@ public class UserServiceImpl implements UserService {
             currentUser.setRefreshToken(token);
             userRepository.save(currentUser);
         }
+    }
+
+    @Override
+    public User getUserWithRoleAndPermissions(String id) {
+        return userRepository.findByIdWithFullInfor(id);
     }
 }

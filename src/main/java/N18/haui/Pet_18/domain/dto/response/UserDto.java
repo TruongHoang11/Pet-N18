@@ -2,7 +2,7 @@ package N18.haui.Pet_18.domain.dto.response;
 
 
 import N18.haui.Pet_18.constant.GenderEnum;
-import N18.haui.Pet_18.domain.dto.common.DateAuditing;
+import N18.haui.Pet_18.domain.dto.common.FlagUserDateAuditing;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserDto extends DateAuditing {
+public class UserDto extends FlagUserDateAuditing {
 
   private String id;
   private String name;

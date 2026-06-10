@@ -30,4 +30,7 @@ public class ProductDto extends DateAuditing {
 
 
     private Integer stockQuantity;
+
+    private Double avgRating;
+    private Integer totalReviews;
 }

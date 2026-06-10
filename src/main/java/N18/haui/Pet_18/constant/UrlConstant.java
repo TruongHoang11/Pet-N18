@@ -140,4 +140,22 @@ public class UrlConstant {
     private PetService() {}
   }
 
+  public static class ProductReview {
+    private static final String PRE_FIX = "/product-reviews";
+    private static final String ADMIN_PRE_FIX = "/admin/product-reviews";
+
+    // Public
+    public static final String GET_REVIEWS_BY_PRODUCT = PRE_FIX + "/{productId}";
+
+    // User
+    public static final String CREATE_REVIEW = PRE_FIX;
+    public static final String UPDATE_REVIEW = PRE_FIX;
+    public static final String DELETE_REVIEW = PRE_FIX + "/{reviewId}";
+
+    // Admin
+    public static final String GET_ALL_REVIEWS = ADMIN_PRE_FIX;
+
+    private ProductReview() {}
+  }
+
 }

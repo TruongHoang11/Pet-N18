@@ -1,6 +1,7 @@
 package N18.haui.Pet_18.domain.dto.request;
 
 import N18.haui.Pet_18.constant.GenderEnum;
+import N18.haui.Pet_18.domain.dto.common.UserDateAuditing;
 import N18.haui.Pet_18.domain.entity.Role;
 import N18.haui.Pet_18.validator.annotation.EnumValue;
 import jakarta.validation.constraints.NotBlank;
@@ -16,7 +17,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserUpdateDto {
+public class UserUpdateDto extends UserDateAuditing {
 
     @NotBlank(message = "User ID is required")
     private String id;

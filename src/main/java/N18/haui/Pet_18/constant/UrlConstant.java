@@ -151,7 +151,10 @@ public class UrlConstant {
     // Admin
     public static final String GET_ALL_REVIEWS = ADMIN_PRE_FIX;
 
-    private ProductReview() {}
+    private ProductReview() {
+    }
+
+  }
   public static class PetServiceImages {
     private static final String PRE_FIX = "/service-images";
 

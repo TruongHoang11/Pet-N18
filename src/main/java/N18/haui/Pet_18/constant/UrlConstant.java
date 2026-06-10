@@ -172,4 +172,19 @@ public class UrlConstant {
     private Booking() {}
   }
 
+  public static class Menu {
+    private static final String PRE_FIX = "/menus";
+
+    public static final String CREATE_MENU = PRE_FIX;
+    public static final String UPDATE_MENU = PRE_FIX + "/{id}";
+    public static final String GET_MENU = PRE_FIX + "/{id}";
+    public static final String GET_ALL_MENUS = PRE_FIX;
+    public static final String SEARCH_MENUS = PRE_FIX + "/search";
+    public static final String GET_MENUS_BY_CATEGORY = PRE_FIX + "/category/{categoryId}";
+    public static final String DELETE_MENU = PRE_FIX + "/{id}";
+    public static final String GET_MENUS_TREE = PRE_FIX + "/tree";
+    public static final String GET_ACTIVE_MENUS = PRE_FIX + "/active";
+    private Menu() {}
+  }
+
 }

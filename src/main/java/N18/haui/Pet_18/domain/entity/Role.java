@@ -49,6 +49,10 @@ public class Role extends FlagUserDateAuditing implements Serializable {
     @JsonIgnore
     private List<User> users;
 
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Menu> menus;
+
 
     public Role(String roleName, String description, boolean active, List<Permission> permissionList) {
         this.name = roleName;

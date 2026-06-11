@@ -24,4 +24,8 @@ public interface UserRepository extends JpaRepository<User, String>, JpaSpecific
     }
 
     boolean existsByEmail(String email);
+
+
+    @Query(value = "SELECT u FROM User u LEFT JOIN FETCH u.role r LEFT JOIN FETCH r.permissions WHERE u.id = :id")
+    User findByIdWithFullInfor(String id);
 }

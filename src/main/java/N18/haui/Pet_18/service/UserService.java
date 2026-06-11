@@ -22,9 +22,13 @@ public interface UserService {
 
     ResultPaginationDto getAllUser(List<String> filter, Pageable pageable);
 
+    CommonResponseDto changeUserStatus(String id);
+
     User getUserLogin();
 
     User getUserByEmail(String email);
 
     void updateUserToken(String token, String email);
+
+    User getUserWithRoleAndPermissions(String id);
 }

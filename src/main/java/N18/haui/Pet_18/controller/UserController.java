@@ -56,6 +56,12 @@ public class UserController {
 
     }
 
+    @PatchMapping(UrlConstant.User.CHANGE_USER_STATUS)
+    public ResponseEntity<?> changeUserStatus(@PathVariable String id){
+            CommonResponseDto dto = userService.changeUserStatus(id);
+            return VsResponseUtil.success(HttpStatus.OK, dto);
+
+    }
 
 
 }

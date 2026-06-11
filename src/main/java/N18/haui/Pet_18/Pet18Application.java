@@ -33,7 +33,6 @@ public class Pet18Application {
             if (roleRepository.count() == 0) {
                 roleRepository.save(new Role(null, RoleConstant.ADMIN, "Role for admin"));
                 roleRepository.save(new Role(null, RoleConstant.USER, "Role for user"));
-                roleRepository.save(new Role(null, RoleConstant.STAFF, "Role for staff"));
             }
             //init admin
             if (userRepository.count() == 0) {

@@ -4,7 +4,9 @@ import N18.haui.Pet_18.base.RestApiV1;
 import N18.haui.Pet_18.base.VsResponseUtil;
 import N18.haui.Pet_18.constant.UrlConstant;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateService;
+import N18.haui.Pet_18.domain.dto.request.ReqRecommendationDto;
 import N18.haui.Pet_18.domain.dto.request.ReqUpdateService;
+import N18.haui.Pet_18.domain.dto.response.ResRecommendationDto;
 import N18.haui.Pet_18.service.PetServiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -63,5 +65,10 @@ public class PetServiceController {
     public ResponseEntity<?> getTopServices(
             @RequestParam(defaultValue = "6") Integer limit) {
         return VsResponseUtil.success(HttpStatus.OK, petServiceService.getTopServices(limit));
+    }
+
+    @PostMapping(UrlConstant.PetService.GET_RECOMMENDATIONS)
+    public ResponseEntity<?> recommendServices(@Valid @RequestBody ReqRecommendationDto req) {
+        return VsResponseUtil.success(HttpStatus.OK, new ResRecommendationDto(petServiceService.getRecommendedServiceIds(req.getItemIds())));
     }
 }

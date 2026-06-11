@@ -35,6 +35,7 @@ public class UrlConstant {
     public static final String CREATE_PRODUCT = PRE_FIX;
     public static final String UPDATE_PRODUCT = PRE_FIX;
     public static final String DELETE_PRODUCT = PRE_FIX + "/{id}";
+    public static final String GET_RECOMMENDATIONS = PRE_FIX + "/recommendations";
     private Product() {}
   }
 
@@ -131,6 +132,7 @@ public class UrlConstant {
     public static final String GET_SERVICES_BY_CATEGORY = PRE_FIX + "/category/{categoryId}";
     public static final String DELETE_SERVICE = PRE_FIX + "/{id}";
     public static final String GET_TOP_SERVICES = PRE_FIX + "/top";
+    public static final String GET_RECOMMENDATIONS = PRE_FIX + "/recommendations";
 
     private PetService() {}
   }
@@ -166,6 +168,7 @@ public class UrlConstant {
     public static final String GET_MY_BOOKINGS = PRE_FIX + "/my-bookings";
     public static final String GET_BOOKINGS_BY_STATUS = PRE_FIX + "/by-status";
     public static final String GET_ALL_BOOKINGS = PRE_FIX + "/all";
+    public static final String GET_BOOKED_TIMES = PRE_FIX + "/occupied-times";
     public static final String CANCEL_BOOKING = PRE_FIX + "/{id}/cancel";
     public static final String UPDATE_BOOKING_STATUS = PRE_FIX + "/{id}/status";
 

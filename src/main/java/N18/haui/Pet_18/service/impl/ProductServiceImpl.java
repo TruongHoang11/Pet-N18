@@ -20,6 +20,7 @@ import N18.haui.Pet_18.repository.InventoryRepository;
 import N18.haui.Pet_18.repository.InventoryTransactionRepository;
 import N18.haui.Pet_18.repository.ProductRepository;
 import N18.haui.Pet_18.service.ProductService;
+import N18.haui.Pet_18.service.RecommendationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final InventoryRepository inventoryRepository;
     private final InventoryTransactionRepository inventoryTransactionRepository;
+    private final RecommendationService recommendationService;
 
     public void checkExistProductByName(String name) {
         log.info("[CHECK] Kiểm tra trùng lặp tên sản phẩm: '{}'", name);
@@ -246,6 +248,11 @@ public class ProductServiceImpl implements ProductService {
 
         log.info("[GET_ALL] Hoàn thành phân trang dữ liệu sản phẩm thành công.");
         return resultPaginationDTO;
+    }
+
+    @Override
+    public List<Long> getRecommendedProductIds(List<Long> productIds) {
+        return recommendationService.recommendProducts(productIds);
     }
 
     private void createInventoryTransaction(Inventory inventory, Integer quantity, TypeInventory type, String note){

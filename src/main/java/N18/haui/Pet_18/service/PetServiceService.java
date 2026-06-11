@@ -25,4 +25,6 @@ public interface PetServiceService {
     void deleteService(Long id);
 
     List<ServiceDto> getTopServices(Integer limit);
+
+    List<Long> getRecommendedServiceIds(List<Long> serviceIds);
 }

@@ -12,6 +12,7 @@ import N18.haui.Pet_18.repository.CategoryRepository;
 import N18.haui.Pet_18.repository.PetServiceRepository;
 import N18.haui.Pet_18.service.PetServiceReviewService;
 import N18.haui.Pet_18.service.PetServiceService;
+import N18.haui.Pet_18.service.RecommendationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,7 @@ public class PetServiceServiceImpl implements PetServiceService {
     private final CategoryRepository categoryRepository;
     private final ServiceMapper serviceMapper;
     private final PetServiceReviewService reviewService;
+    private final RecommendationService recommendationService;
 
     @Override
     @Transactional
@@ -166,6 +168,11 @@ public class PetServiceServiceImpl implements PetServiceService {
                     return dto;
                 })
                 .toList();
+    }
+
+    @Override
+    public List<Long> getRecommendedServiceIds(List<Long> serviceIds) {
+        return recommendationService.recommendServices(serviceIds);
     }
 
     private void enrichServiceDto(ServiceDto dto) {

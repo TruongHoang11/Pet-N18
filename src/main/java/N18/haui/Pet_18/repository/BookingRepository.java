@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,6 +18,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpec
     Page<Booking> findByUserId(Long userId, Pageable pageable);
 
     Page<Booking> findByUserIdAndStatus(Long userId, BookingStatus status, Pageable pageable);
+
+    List<Booking> findByBookingDateAndStatusNot(LocalDate bookingDate, BookingStatus status);
 
     List<Booking> findByStartTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
 

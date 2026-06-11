@@ -4,6 +4,7 @@ import N18.haui.Pet_18.constant.BookingStatus;
 import N18.haui.Pet_18.domain.dto.pagination.ResultPaginationDto;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateBooking;
 import N18.haui.Pet_18.domain.dto.response.BookingDto;
+import N18.haui.Pet_18.domain.dto.response.BookingTimeSlotDto;
 import N18.haui.Pet_18.domain.entity.Booking;
 import N18.haui.Pet_18.domain.entity.BookingDetail;
 import N18.haui.Pet_18.domain.entity.PetService;
@@ -25,8 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -138,6 +141,18 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("[BOOKING] Booking not found with ID: " + id));
 
         return bookingMapper.toDto(booking);
+    }
+
+    @Override
+    public List<BookingTimeSlotDto> getBookedTimeSlots(LocalDate bookingDate) {
+        log.info("[BOOKING] Getting occupied booking times for date: {}", bookingDate);
+
+        List<Booking> bookings = bookingRepository.findByBookingDateAndStatusNot(bookingDate, BookingStatus.CANCELLED);
+
+        return bookings.stream()
+                .map(booking -> new BookingTimeSlotDto(booking.getStartTime(), booking.getEndTime()))
+                .sorted(Comparator.comparing(BookingTimeSlotDto::getStartTime))
+                .toList();
     }
 
     @Override

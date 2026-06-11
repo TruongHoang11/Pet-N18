@@ -192,4 +192,20 @@ public class UrlConstant {
     private Booking() {}
   }
 
+
+  public static class Category {
+    private static final String PRE_FIX = "/categories";
+
+    // Public
+    public static final String GET_CATEGORIES = PRE_FIX;
+    public static final String GET_CATEGORY = PRE_FIX + "/{id}";
+
+    // Admin
+    public static final String CREATE_CATEGORY = PRE_FIX;
+    public static final String UPDATE_CATEGORY = PRE_FIX;
+    public static final String DELETE_CATEGORY = PRE_FIX + "/{id}";
+
+    private Category() {}
+  }
+
 }

@@ -1,6 +1,7 @@
 package N18.haui.Pet_18.service.impl;
 
 import N18.haui.Pet_18.domain.dto.pagination.ResultPaginationDto;
+import N18.haui.Pet_18.domain.dto.response.CommonResponseDto;
 import N18.haui.Pet_18.domain.dto.response.RoleDto;
 import N18.haui.Pet_18.domain.entity.Permission;
 import N18.haui.Pet_18.domain.entity.Role;
@@ -15,6 +16,7 @@ import N18.haui.Pet_18.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ public class RoleServiceImpl implements RoleService {
     private final PermissionMapper permissionMapper;
 
     public void checkValidRoleName(String name){
-        if(roleRepository.existsByName(name)){
+        if(roleRepository.existsByNameAndDeleteFlagFalseAndActiveFlagTrue(name)){
             throw new BadRequestException("Role with name = " + name + " already exists!");
         }
     }
@@ -79,11 +81,13 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void deleteRole(Long id) {
-        if(!roleRepository.existsById(id)){
-            throw new BadRequestException("Role with id = " + id + " not found!");
-        }
-        roleRepository.deleteById(id);
+    public CommonResponseDto deleteRole(Long id) {
+        Role role = roleRepository.findByIdAndDeleteFlagFalseAndActiveFlagTrue(id).orElseThrow(
+                () -> new BadRequestException("Role with id = " + id + " not found!")
+        );
+        role.setDeleteFlag(true);
+        roleRepository.save(role);
+        return new CommonResponseDto(true, "Role deleted successfully!");
     }
 
     @Override
@@ -91,17 +95,21 @@ public class RoleServiceImpl implements RoleService {
         SpecificationBuilder<Role> specificationBuilder = new SpecificationBuilder<>();
         FilterProcessor.process(specificationBuilder, filter);
 
-        Page<Role> pageUser = roleRepository.findAll(specificationBuilder.build(), pageable);
+        Specification<Role> spec = specificationBuilder.build();
+        Specification<Role> softDeleteSpec = (root, query, cb) -> cb.equal(root.get("deleteFlag"), false);
 
+        Specification<Role> finalSpec = (spec == null) ? softDeleteSpec : spec.and(softDeleteSpec);
+
+        Page<Role> pageRole = roleRepository.findAll(finalSpec, pageable);
 
         ResultPaginationDto resultPaginationDTO = new ResultPaginationDto();
         ResultPaginationDto.Meta meta = new ResultPaginationDto.Meta();
         meta.setPage(pageable.getPageNumber() + 1);
         meta.setPageSize(pageable.getPageSize());
-        meta.setPages(pageUser.getTotalPages());
-        meta.setTotal(pageUser.getTotalElements());
+        meta.setPages(pageRole.getTotalPages());
+        meta.setTotal(pageRole.getTotalElements());
 
-        List<RoleDto> result = roleMapper.toDtoList(pageUser.getContent());
+        List<RoleDto> result = roleMapper.toDtoList(pageRole.getContent());
 
         resultPaginationDTO.setMeta(meta);
         resultPaginationDTO.setResult(result);

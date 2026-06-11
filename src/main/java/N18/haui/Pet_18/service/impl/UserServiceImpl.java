@@ -37,14 +37,14 @@ public class UserServiceImpl implements UserService {
 
 
     public void checkExistedUserByEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmailAndDeleteFlagFalse(email)) {
             throw new ConflictException("Email already exists");
         }
     }
 
     @Override
     public UserDto getUserById(String userId) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeleteFlagFalse(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
         return userMapper.toUserDto(user);
     }
@@ -53,14 +53,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto createUser(UserCreateDto userCreateDto) {
         checkExistedUserByEmail(userCreateDto.getEmail());
-        User createUser = new User();
-        createUser = userMapper.toUser(userCreateDto);
+        User createUser = userMapper.toUser(userCreateDto);
 
 
         Role defaultRole = (userCreateDto.getRole() != null && userCreateDto.getRole().getId() != null)
-                ? roleRepository.findById(userCreateDto.getRole().getId())
+                ? roleRepository.findByIdAndDeleteFlagFalse(userCreateDto.getRole().getId())
                 .orElseThrow(() -> new NotFoundException("Role not found with id: " + userCreateDto.getRole().getId()))
-                : roleRepository.findByName(RoleConstant.USER)
+                : roleRepository.findByNameAndDeleteFlagFalse(RoleConstant.USER)
                 .orElseGet(() -> {
                     Role newRole = new Role();
                     newRole.setName(RoleConstant.USER);
@@ -75,7 +74,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto updateUser(UserUpdateDto userUpdateDto) {
-        User updateUser = userRepository.findById(userUpdateDto.getId()).orElseThrow(
+        User updateUser = userRepository.findByIdAndDeleteFlagFalse(userUpdateDto.getId()).orElseThrow(
                 () -> new NotFoundException("User not found with id: " + userUpdateDto.getId())
         );
         if(userUpdateDto.getRole() != null && userUpdateDto.getRole().getId() != null){
@@ -88,7 +87,7 @@ public class UserServiceImpl implements UserService {
         updateUser.setDateOfBirth(userUpdateDto.getDateOfBirth());
         updateUser.setGender(GenderEnum.valueOf(userUpdateDto.getGender()));
 
-        updateUser.setCreatedBy(updateUser.getCreatedBy());
+
         userRepository.save(updateUser);
         return userMapper.toUserDto(updateUser);
     }
@@ -153,7 +152,7 @@ public class UserServiceImpl implements UserService {
         String id = SecurityUtil.getCurrentUserLogin().orElseThrow(
                 () -> new UnauthorizedException("Login required")
         );
-        User currentUser = userRepository.findById(id).orElseThrow(
+        User currentUser = userRepository.findByIdAndDeleteFlagFalse(id).orElseThrow(
                 () -> new NotFoundException("User not found with id: " + id)
         );
         return currentUser;
@@ -161,22 +160,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(
+        return userRepository.findByEmailAndDeleteFlagFalse(email).orElseThrow(
                 () -> new NotFoundException("User not found with email: " + email)
         );
     }
 
     @Override
+    @Transactional
     public void updateUserToken(String token, String email) {
         User currentUser = this.getUserByEmail(email);
-        if(currentUser != null){
+
             currentUser.setRefreshToken(token);
             userRepository.save(currentUser);
-        }
     }
 
     @Override
     public User getUserWithRoleAndPermissions(String id) {
-        return userRepository.findByIdWithFullInfor(id);
+        return userRepository.findByIdWithFullInfor(id)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
     }
 }

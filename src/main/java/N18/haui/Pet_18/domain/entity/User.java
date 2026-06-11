@@ -86,6 +86,9 @@ public class User extends FlagUserDateAuditing implements Serializable {
     @OneToOne(mappedBy = "user")
     private Cart cart;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
 
 
 }

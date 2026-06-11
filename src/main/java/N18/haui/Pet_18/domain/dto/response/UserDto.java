@@ -24,6 +24,7 @@ public class UserDto extends FlagUserDateAuditing {
   private LocalDate dateOfBirth;
   private GenderEnum gender;
 
+
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private String roleName;
 

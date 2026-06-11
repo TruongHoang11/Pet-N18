@@ -1,6 +1,7 @@
 package N18.haui.Pet_18.service.impl;
 
 import N18.haui.Pet_18.constant.BookingStatus;
+import N18.haui.Pet_18.domain.entity.Pet;
 import N18.haui.Pet_18.domain.dto.pagination.ResultPaginationDto;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateBooking;
 import N18.haui.Pet_18.domain.dto.response.BookingDto;
@@ -14,6 +15,7 @@ import N18.haui.Pet_18.exception.BadRequestException;
 import N18.haui.Pet_18.exception.NotFoundException;
 import N18.haui.Pet_18.repository.BookingDetailRepository;
 import N18.haui.Pet_18.repository.BookingRepository;
+import N18.haui.Pet_18.repository.PetRepository;
 import N18.haui.Pet_18.repository.PetServiceRepository;
 import N18.haui.Pet_18.repository.UserRepository;
 import N18.haui.Pet_18.service.BookingService;
@@ -31,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 // @RequiredArgsConstructor
@@ -41,6 +44,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final BookingDetailRepository bookingDetailRepository;
     private final PetServiceRepository petServiceRepository;
+    private final PetRepository petRepository;
     private final UserRepository userRepository;
     private final BookingMapper bookingMapper;
 
@@ -73,7 +77,7 @@ public class BookingServiceImpl implements BookingService {
             PetService service = petServiceRepository.findById(serviceId)
                     .orElseThrow(() -> new NotFoundException("[BOOKING] Service not found with ID: " + serviceId));
 
-            if (!N18.haui.Pet_18.constant.Status.ENABLE.equals(service.getStatus())) {
+            if (Boolean.TRUE.equals(service.getDeleteFlag()) || Boolean.FALSE.equals(service.getActiveFlag())) {
                 throw new BadRequestException("[BOOKING] Service is disabled: " + service.getName());
             }
 
@@ -98,15 +102,35 @@ public class BookingServiceImpl implements BookingService {
         log.info("[BOOKING] Duration validation passed. Total: {} min, Available: {} min",
                 totalDurationMin, availableMinutes);
 
+        // ============ VALIDATION 6: Check overlapping bookings ============
+        List<Booking> existingBookings = bookingRepository.findByBookingDateAndStatusNot(req.getBookingDate(), BookingStatus.CANCELLED);
+        for (Booking existing : existingBookings) {
+            // block if new start or new end lies within any existing booking interval (inclusive),
+            // or if new interval fully contains an existing interval
+            boolean startInside = !req.getStartTime().isBefore(existing.getStartTime()) && !req.getStartTime().isAfter(existing.getEndTime());
+            boolean endInside = !req.getEndTime().isBefore(existing.getStartTime()) && !req.getEndTime().isAfter(existing.getEndTime());
+            boolean fullyContains = req.getStartTime().isBefore(existing.getStartTime()) && req.getEndTime().isAfter(existing.getEndTime());
+
+            if (startInside || endInside || fullyContains) {
+                throw new BadRequestException(
+                        String.format("[BOOKING] Requested time %s-%s conflicts with existing booking %s-%s",
+                                req.getStartTime(), req.getEndTime(), existing.getStartTime(), existing.getEndTime())
+                );
+            }
+        }
+
         // ============ CREATE BOOKING ============
         Booking booking = new Booking();
         booking.setUser(user);
+        booking.setBookingDate(req.getBookingDate());
         booking.setStartTime(req.getStartTime());
         booking.setEndTime(req.getEndTime());
         booking.setStatus(BookingStatus.PENDING);  // Set initial status as PENDING
         if (req.getPetId() != null) {
             // Validate pet if provided
-            booking.setPet(null);  // Will be set if pet service supports it
+            Pet pet = petRepository.findById(req.getPetId())
+                    .orElseThrow(() -> new NotFoundException("[BOOKING] Pet not found with ID: " + req.getPetId()));
+            booking.setPet(pet);  // Will be set if pet service supports it
         }
 
         Booking savedBooking = bookingRepository.save(booking);
@@ -144,10 +168,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingTimeSlotDto> getBookedTimeSlots(LocalDate bookingDate) {
-        log.info("[BOOKING] Getting occupied booking times for date: {}", bookingDate);
+    public List<BookingTimeSlotDto> getBookedTimeSlots() {
+        log.info("[BOOKING] Getting occupied booking times");
 
-        List<Booking> bookings = bookingRepository.findByBookingDateAndStatusNot(bookingDate, BookingStatus.CANCELLED);
+        List<Booking> bookings = bookingRepository.findByStatusNotAndDeleteFlagFalseAndActiveFlagTrue(BookingStatus.CANCELLED);
 
         return bookings.stream()
                 .map(booking -> new BookingTimeSlotDto(booking.getStartTime(), booking.getEndTime()))
@@ -159,9 +183,9 @@ public class BookingServiceImpl implements BookingService {
     public ResultPaginationDto getMyBookings(Pageable pageable) {
         log.info("[BOOKING] Getting my bookings with pagination");
 
-        // Get current user (you should implement this in UserService)
-        // For now, assuming we can get from context
-        Long userId = 1L;  // Placeholder - should get from SecurityContext
+        // Get current logged-in user id from security context
+        Optional<String> currentUser = N18.haui.Pet_18.security.SecurityUtil.getCurrentUserLogin();
+        String userId = currentUser.orElseThrow(() -> new BadRequestException("[BOOKING] Current user not authenticated"));
 
         Page<Booking> page = bookingRepository.findByUserId(userId, pageable);
         List<BookingDto> dtos = page.getContent().stream()
@@ -233,6 +257,11 @@ public class BookingServiceImpl implements BookingService {
 
         try {
             BookingStatus newStatus = BookingStatus.valueOf(status.toUpperCase());
+            // If confirming the booking, re-run time validations similar to createBooking
+            if (newStatus == BookingStatus.CONFIRMED) {
+                validateBookingForConfirmation(booking);
+            }
+
             booking.setStatus(newStatus);
             Booking updatedBooking = bookingRepository.save(booking);
             log.info("[BOOKING] Booking status updated successfully");
@@ -255,5 +284,69 @@ public class BookingServiceImpl implements BookingService {
         response.setMeta(meta);
 
         return response;
+    }
+
+    /**
+     * Validate booking details and times before confirming an existing booking.
+     */
+    private void validateBookingForConfirmation(Booking booking) {
+        if (booking.getStartTime().isAfter(booking.getEndTime())) {
+            throw new BadRequestException("[BOOKING] Start time must be before end time");
+        }
+
+        LocalDateTime startDateTime = LocalDateTime.of(booking.getBookingDate(), booking.getStartTime());
+        if (startDateTime.isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("[BOOKING] Booking start time cannot be in the past");
+        }
+
+        // Collect services from booking details
+        List<PetService> services = new ArrayList<>();
+        if (booking.getBookingDetails() == null || booking.getBookingDetails().isEmpty()) {
+            throw new BadRequestException("[BOOKING] Booking must contain at least one service");
+        }
+
+        for (BookingDetail detail : booking.getBookingDetails()) {
+            PetService service = detail.getService();
+            if (service == null) {
+                throw new NotFoundException("[BOOKING] Booking service not found in booking details");
+            }
+
+            if (Boolean.TRUE.equals(service.getDeleteFlag()) || Boolean.FALSE.equals(service.getActiveFlag())) {
+                throw new BadRequestException("[BOOKING] Service is disabled: " + service.getName());
+            }
+
+            services.add(service);
+        }
+
+        long totalDurationMin = services.stream()
+                .mapToLong(s -> s.getDurationMin())
+                .sum();
+
+        Duration availableDuration = Duration.between(booking.getStartTime(), booking.getEndTime());
+        long availableMinutes = availableDuration.toMinutes();
+
+        if (totalDurationMin > availableMinutes) {
+            throw new BadRequestException(
+                    String.format("[BOOKING] Total service duration (%d min) exceeds available time window (%d min)",
+                            totalDurationMin, availableMinutes)
+            );
+        }
+
+        // Overlap check: exclude this booking itself
+        List<Booking> existingBookings = bookingRepository.findByBookingDateAndStatusNot(booking.getBookingDate(), BookingStatus.CANCELLED);
+        for (Booking existing : existingBookings) {
+            if (existing.getId().equals(booking.getId())) continue;
+
+            boolean startInside = !booking.getStartTime().isBefore(existing.getStartTime()) && !booking.getStartTime().isAfter(existing.getEndTime());
+            boolean endInside = !booking.getEndTime().isBefore(existing.getStartTime()) && !booking.getEndTime().isAfter(existing.getEndTime());
+            boolean fullyContains = booking.getStartTime().isBefore(existing.getStartTime()) && booking.getEndTime().isAfter(existing.getEndTime());
+
+            if (startInside || endInside || fullyContains) {
+                throw new BadRequestException(
+                        String.format("[BOOKING] Requested time %s-%s conflicts with existing booking %s-%s",
+                                booking.getStartTime(), booking.getEndTime(), existing.getStartTime(), existing.getEndTime())
+                );
+            }
+        }
     }
 }

@@ -108,7 +108,9 @@ public class MenuServiceImpl implements MenuService {
 
         ResultPaginationDto result = new ResultPaginationDto();
 
-        result.setResult(menuMapper.toDtos(page.getContent()));
+        List<MenuDto> menuDtos = menuMapper.toDtos(page.getContent());
+        menuDtos.forEach(menuDto -> menuDto.setChildren(null));
+        result.setResult(menuDtos);
 
         ResultPaginationDto.Meta meta = new ResultPaginationDto.Meta();
 

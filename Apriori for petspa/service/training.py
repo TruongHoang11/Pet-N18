@@ -26,7 +26,7 @@ print("Loading dataset...")
 
 df = pd.read_csv(DATASET_PATH)
 
-required_columns = {"order_id", "product_id"}
+required_columns = {"booking_id", "service_id"}
 
 if not required_columns.issubset(df.columns):
     raise Exception(
@@ -43,7 +43,7 @@ print(df.head())
 print("\nCreating basket...")
 
 basket = (
-    df.groupby(["order_id", "product_id"])
+    df.groupby(["booking_id", "service_id"])
       .size()
       .unstack(fill_value=0)
 )

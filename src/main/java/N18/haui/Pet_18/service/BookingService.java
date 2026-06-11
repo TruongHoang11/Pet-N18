@@ -21,7 +21,7 @@ public interface BookingService {
 
     ResultPaginationDto getAllBookings(Pageable pageable);
 
-    List<BookingTimeSlotDto> getBookedTimeSlots(LocalDate bookingDate);
+    List<BookingTimeSlotDto> getBookedTimeSlots();
 
     BookingDto cancelBooking(Long id);
 

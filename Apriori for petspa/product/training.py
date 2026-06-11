@@ -1,4 +1,4 @@
-# Luật kết hợp cho đề xuất sản phẩm 
+# Luật kết hợp cho đề xuất sản phẩm dựa trên bảng chi tiết đơn hàng
 import pandas as pd
 import json
 import pickle

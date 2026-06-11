@@ -26,7 +26,7 @@ public class PetServiceController {
         return VsResponseUtil.success(HttpStatus.CREATED, petServiceService.createService(req));
     }
 
-    @PatchMapping(UrlConstant.PetService.UPDATE_SERVICE)
+    @PutMapping(UrlConstant.PetService.UPDATE_SERVICE)
     public ResponseEntity<?> updateService(@Valid @RequestBody ReqUpdateService req) {
         return VsResponseUtil.success(HttpStatus.OK, petServiceService.updateService(req));
     }
@@ -57,8 +57,7 @@ public class PetServiceController {
 
     @DeleteMapping(UrlConstant.PetService.DELETE_SERVICE)
     public ResponseEntity<?> deleteService(@PathVariable Long id) {
-        petServiceService.deleteService(id);
-        return VsResponseUtil.success(HttpStatus.NO_CONTENT, null);
+        return VsResponseUtil.success(HttpStatus.NO_CONTENT, petServiceService.deleteService(id));
     }
 
     @GetMapping(UrlConstant.PetService.GET_TOP_SERVICES)

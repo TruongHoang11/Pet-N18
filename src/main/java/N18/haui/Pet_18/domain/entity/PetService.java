@@ -9,8 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import N18.haui.Pet_18.constant.Status;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -29,10 +27,6 @@ public class PetService extends FlagUserDateAuditing {
 
     @Column(name = "name")
     private String name;
-
-    @Column(name = "status", unique = true)
-    @Enumerated(EnumType.STRING)
-    private Status status;
 
     @Column(name ="description")
     private String description;

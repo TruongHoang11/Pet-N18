@@ -115,7 +115,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public UserDto register(ReqRegister reqRegister) {
-        if(userRepository.existsByEmail(reqRegister.getEmail())){
+        if(userRepository.existsByEmailAndDeleteFlagFalse(reqRegister.getEmail())){
             throw new ConflictException("Email already exists");
         }
         if(!reqRegister.getPassword().equals(reqRegister.getConfirmPassword())){

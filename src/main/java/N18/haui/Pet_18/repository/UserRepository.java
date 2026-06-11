@@ -27,6 +27,6 @@ public interface UserRepository extends JpaRepository<User, String>, JpaSpecific
     boolean existsByEmailAndDeleteFlagFalse(String email);
 
 
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.role LEFT JOIN FETCH u.role.permissions WHERE u.id = :id AND u.deleteFlag = false AND u.activeFlag = true")
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.role LEFT JOIN FETCH u.role.permissions WHERE u.id = :id AND u.deleteFlag = false")
     Optional<User> findByIdWithFullInfor(@Param("id") String id);
 }

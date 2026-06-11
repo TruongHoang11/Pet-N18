@@ -108,7 +108,7 @@ public class Pet18Application {
             }
             //init admin
             if (userRepository.count() == 0) {
-                Role role = roleRepository.findByNameAndDeleteFlagFalseAndActiveFlagTrue(RoleConstant.ADMIN).orElse(null);
+                Role role = roleRepository.findByNameAndDeleteFlagFalse(RoleConstant.ADMIN).orElse(null);
                 User admin = new User();
                 admin.setName("Admin");
                 admin.setEmail("admin@gmail.com");

@@ -31,7 +31,7 @@ public class RoleServiceImpl implements RoleService {
     private final PermissionMapper permissionMapper;
 
     public void checkValidRoleName(String name){
-        if(roleRepository.existsByNameAndDeleteFlagFalseAndActiveFlagTrue(name)){
+        if(roleRepository.existsByNameAndDeleteFlagFalse(name)){
             throw new BadRequestException("Role with name = " + name + " already exists!");
         }
     }
@@ -82,7 +82,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public CommonResponseDto deleteRole(Long id) {
-        Role role = roleRepository.findByIdAndDeleteFlagFalseAndActiveFlagTrue(id).orElseThrow(
+        Role role = roleRepository.findByIdAndDeleteFlagFalse(id).orElseThrow(
                 () -> new BadRequestException("Role with id = " + id + " not found!")
         );
         role.setDeleteFlag(true);

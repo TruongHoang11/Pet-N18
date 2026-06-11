@@ -30,8 +30,8 @@ public class PermissionInterceptorConfiguration implements WebMvcConfigurer {
                 // Public product/service read endpoints (GET)
                 prefix + UrlConstant.Product.GET_PRODUCTS,
                 prefix + UrlConstant.Product.GET_PRODUCT,
-                prefix + UrlConstant.PetService.GET_PET_SERVICE_DETAIL,
-                prefix + UrlConstant.PetService.GET_MY_PET_SERVICES,
+                prefix + UrlConstant.PetService.GET_SERVICE,
+                prefix + UrlConstant.PetService.GET_ALL_SERVICES,
 
                 // Swagger / OpenAPI
                 "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",

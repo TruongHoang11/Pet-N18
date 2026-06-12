@@ -13,7 +13,9 @@ import java.util.Optional;
 public interface PetRepository extends JpaRepository<Pet, Long>, JpaSpecificationExecutor<Pet> {
     Optional<Pet> findByUserId(String userId);
 
-    List<Pet> findByUserIdAndDeleteFlagFalseAndActiveFlagTrue(String userId);
+    List<Pet> findByUserIdAndDeleteFlagFalse(String userId);
 
-    boolean existsByUserIdAndName(String userId, String petName);
+    Optional<Pet> findByIdAndDeleteFlagFalse(Long id);
+
+    boolean existsByUserIdAndNameAndDeleteFlagFalse(String userId, String petName);
 }

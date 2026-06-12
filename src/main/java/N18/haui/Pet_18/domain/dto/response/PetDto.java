@@ -8,7 +8,10 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class PetDto {
-    private Long id;
+
+
+    private Long id; // pet id
+    private String ownerId;
     private String name;
     private String specie;
     private String gender;

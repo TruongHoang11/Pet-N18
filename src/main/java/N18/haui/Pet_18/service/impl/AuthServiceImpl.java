@@ -115,7 +115,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public UserDto register(ReqRegister reqRegister) {
-        if(userRepository.existsByEmail(reqRegister.getEmail())){
+        if(userRepository.existsByEmailAndDeleteFlagFalse(reqRegister.getEmail())){
             throw new ConflictException("Email already exists");
         }
         if(!reqRegister.getPassword().equals(reqRegister.getConfirmPassword())){
@@ -128,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
         // registerUser.setDateOfBirth(reqRegister.getDateOfBirth());
         // registerUser.setGender(GenderEnum.valueOf(reqRegister.getGender()));
         registerUser.setPassword(passwordEncoder.encode(reqRegister.getPassword()));
-        registerUser.setRole(roleRepository.findByName(RoleConstant.USER).orElse(null));
+        registerUser.setRole(roleRepository.findByNameAndDeleteFlagFalse(RoleConstant.USER).orElse(null));
         userRepository.save(registerUser);
         UserDto registerResponseDto = new UserDto();
         registerResponseDto.setId(registerUser.getId());

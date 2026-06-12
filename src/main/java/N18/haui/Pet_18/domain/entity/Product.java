@@ -57,4 +57,13 @@ public class Product extends FlagUserDateAuditing {
     @OneToMany(mappedBy = "product")
     private List<ProductReview> productReviews;
 
+
+    @Column(name = "avg_rating")
+    private Double avgRating = 0.0;
+
+    @Column(name = "total_reviews")
+    private Integer totalReviews = 0;
+
+
+
 }

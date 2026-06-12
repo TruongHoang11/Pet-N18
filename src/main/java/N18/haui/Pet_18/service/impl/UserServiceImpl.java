@@ -3,9 +3,11 @@ package N18.haui.Pet_18.service.impl;
 import N18.haui.Pet_18.constant.GenderEnum;
 import N18.haui.Pet_18.constant.RoleConstant;
 import N18.haui.Pet_18.domain.dto.pagination.ResultPaginationDto;
+import N18.haui.Pet_18.domain.dto.request.ReqUserUpdateProfile;
 import N18.haui.Pet_18.domain.dto.request.UserCreateDto;
 import N18.haui.Pet_18.domain.dto.request.UserUpdateDto;
 import N18.haui.Pet_18.domain.dto.response.CommonResponseDto;
+import N18.haui.Pet_18.domain.dto.response.ResUploadFileResultDto;
 import N18.haui.Pet_18.domain.dto.response.UserDto;
 import N18.haui.Pet_18.domain.entity.Role;
 import N18.haui.Pet_18.domain.entity.User;
@@ -18,6 +20,7 @@ import N18.haui.Pet_18.exception.UnauthorizedException;
 import N18.haui.Pet_18.repository.RoleRepository;
 import N18.haui.Pet_18.repository.UserRepository;
 import N18.haui.Pet_18.security.SecurityUtil;
+import N18.haui.Pet_18.service.FileService;
 import N18.haui.Pet_18.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +28,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @Service
@@ -34,17 +40,20 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
+    private final FileService fileService;
+
+
 
 
     public void checkExistedUserByEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmailAndDeleteFlagFalse(email)) {
             throw new ConflictException("Email already exists");
         }
     }
 
     @Override
     public UserDto getUserById(String userId) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeleteFlagFalse(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
         return userMapper.toUserDto(user);
     }
@@ -53,14 +62,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto createUser(UserCreateDto userCreateDto) {
         checkExistedUserByEmail(userCreateDto.getEmail());
-        User createUser = new User();
-        createUser = userMapper.toUser(userCreateDto);
+        User createUser = userMapper.toUser(userCreateDto);
 
 
         Role defaultRole = (userCreateDto.getRole() != null && userCreateDto.getRole().getId() != null)
-                ? roleRepository.findById(userCreateDto.getRole().getId())
+                ? roleRepository.findByIdAndDeleteFlagFalse(userCreateDto.getRole().getId())
                 .orElseThrow(() -> new NotFoundException("Role not found with id: " + userCreateDto.getRole().getId()))
-                : roleRepository.findByName(RoleConstant.USER)
+                : roleRepository.findByNameAndDeleteFlagFalse(RoleConstant.USER)
                 .orElseGet(() -> {
                     Role newRole = new Role();
                     newRole.setName(RoleConstant.USER);
@@ -75,7 +83,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto updateUser(UserUpdateDto userUpdateDto) {
-        User updateUser = userRepository.findById(userUpdateDto.getId()).orElseThrow(
+        User updateUser = userRepository.findByIdAndDeleteFlagFalse(userUpdateDto.getId()).orElseThrow(
                 () -> new NotFoundException("User not found with id: " + userUpdateDto.getId())
         );
         if(userUpdateDto.getRole() != null && userUpdateDto.getRole().getId() != null){
@@ -88,7 +96,7 @@ public class UserServiceImpl implements UserService {
         updateUser.setDateOfBirth(userUpdateDto.getDateOfBirth());
         updateUser.setGender(GenderEnum.valueOf(userUpdateDto.getGender()));
 
-        updateUser.setCreatedBy(updateUser.getCreatedBy());
+
         userRepository.save(updateUser);
         return userMapper.toUserDto(updateUser);
     }
@@ -153,7 +161,7 @@ public class UserServiceImpl implements UserService {
         String id = SecurityUtil.getCurrentUserLogin().orElseThrow(
                 () -> new UnauthorizedException("Login required")
         );
-        User currentUser = userRepository.findById(id).orElseThrow(
+        User currentUser = userRepository.findByIdAndDeleteFlagFalse(id).orElseThrow(
                 () -> new NotFoundException("User not found with id: " + id)
         );
         return currentUser;
@@ -161,22 +169,49 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(
+        return userRepository.findByEmailAndDeleteFlagFalse(email).orElseThrow(
                 () -> new NotFoundException("User not found with email: " + email)
         );
     }
 
     @Override
+    @Transactional
     public void updateUserToken(String token, String email) {
         User currentUser = this.getUserByEmail(email);
-        if(currentUser != null){
+
             currentUser.setRefreshToken(token);
             userRepository.save(currentUser);
-        }
     }
 
     @Override
     public User getUserWithRoleAndPermissions(String id) {
-        return userRepository.findByIdWithFullInfor(id);
+        return userRepository.findByIdWithFullInfor(id)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+    }
+
+    @Override
+    public CommonResponseDto addAvatar(String userId, MultipartFile file) throws URISyntaxException, IOException {
+
+       User currentUser = this.getUserLogin();
+
+        ResUploadFileResultDto.ResUploadFileDto uploadFileResultDto = fileService.uploadFile(file, "avatars");
+        if(uploadFileResultDto != null){
+            String avatarUrl = uploadFileResultDto.getFileName();
+            currentUser.setAvatarUrl(avatarUrl);
+            userRepository.save(currentUser);
+            return new CommonResponseDto(true, "Upload avatar success");
+        }
+        return new CommonResponseDto(false, "Không có ảnh nào được thêm (file lỗi hoặc trống");
+    }
+
+    @Override
+    public UserDto updateProfile(ReqUserUpdateProfile reqUserUpdateProfile) {
+        User currentUser = this.getUserLogin();
+        currentUser.setName(reqUserUpdateProfile.getName());
+        currentUser.setDateOfBirth(reqUserUpdateProfile.getDateOfBirth());
+        currentUser.setGender(GenderEnum.valueOf(reqUserUpdateProfile.getGender()));
+        userRepository.save(currentUser);
+        return userMapper.toUserDto(currentUser);
+
     }
 }

@@ -26,6 +26,8 @@ public class UrlConstant {
     public static final String UPDATE_USER = PRE_FIX;
     public static final String DELETE_USER = PRE_FIX + "/{id}";
     public static final String CHANGE_USER_STATUS = PRE_FIX + "/{id}/status";
+    public static final String ADD_AVATAR = PRE_FIX + "/{id}/avatar";
+    public static final String UPDATE_PROFILE = PRE_FIX + "/update-profile";
     private User() {}
   }
 
@@ -138,6 +140,25 @@ public class UrlConstant {
     private PetService() {}
   }
 
+  public static class ProductReview {
+    private static final String PRE_FIX = "/product-reviews";
+    private static final String ADMIN_PRE_FIX = "/admin/product-reviews";
+
+    // Public
+    public static final String GET_REVIEWS_BY_PRODUCT = PRE_FIX + "/{productId}";
+
+    // User
+    public static final String CREATE_REVIEW = PRE_FIX;
+    public static final String UPDATE_REVIEW = PRE_FIX;
+    public static final String DELETE_REVIEW = PRE_FIX + "/{reviewId}";
+
+    // Admin
+    public static final String GET_ALL_REVIEWS = ADMIN_PRE_FIX;
+
+    private ProductReview() {
+    }
+
+  }
   public static class PetServiceImages {
     private static final String PRE_FIX = "/service-images";
 
@@ -176,19 +197,32 @@ public class UrlConstant {
     private Booking() {}
   }
 
-  public static class Menu {
-    private static final String PRE_FIX = "/menus";
 
-    public static final String CREATE_MENU = PRE_FIX;
-    public static final String UPDATE_MENU = PRE_FIX + "/{id}";
-    public static final String GET_MENU = PRE_FIX + "/{id}";
-    public static final String GET_ALL_MENUS = PRE_FIX;
-    public static final String SEARCH_MENUS = PRE_FIX + "/search";
-    public static final String GET_MENUS_BY_CATEGORY = PRE_FIX + "/category/{categoryId}";
-    public static final String DELETE_MENU = PRE_FIX + "/{id}";
-    public static final String GET_MENUS_TREE = PRE_FIX + "/tree";
-    public static final String GET_ACTIVE_MENUS = PRE_FIX + "/active";
-    private Menu() {}
+  public static class Category {
+    private static final String PRE_FIX = "/categories";
+
+    // Public
+    public static final String GET_CATEGORIES = PRE_FIX;
+    public static final String GET_CATEGORY = PRE_FIX + "/{id}";
+
+    // Admin
+    public static final String CREATE_CATEGORY = PRE_FIX;
+    public static final String UPDATE_CATEGORY = PRE_FIX;
+    public static final String DELETE_CATEGORY = PRE_FIX + "/{id}";
+
+    private Category() {}
+  }
+
+
+  public static class Payment {
+    private static final String PRE_FIX = "/payment/vnpay";
+    // Admin
+    public static final String CREATE_PAYMENT = PRE_FIX + "/create";
+    public static final String HANDLE_RETURN = PRE_FIX + "/return";
+
+
+
+    private Payment() {}
   }
 
 }

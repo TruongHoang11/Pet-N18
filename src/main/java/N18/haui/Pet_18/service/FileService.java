@@ -13,11 +13,12 @@ import java.util.List;
 public interface FileService {
     void createDirectory(String folder) throws URISyntaxException;
 
-    ResUploadFileResultDto uploadFile(List<MultipartFile> files, String folder) throws URISyntaxException, IOException;
+    ResUploadFileResultDto uploadListFile(List<MultipartFile> files, String folder) throws URISyntaxException, IOException;
 
     long getFileLength(String fileName, String folder) throws URISyntaxException;
 
     Resource getResource(String fileName, String folder) throws URISyntaxException, FileNotFoundException;
 
+    ResUploadFileResultDto.ResUploadFileDto uploadFile(MultipartFile file, String folder) throws URISyntaxException, IOException;
 
 }

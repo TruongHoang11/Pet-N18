@@ -182,6 +182,28 @@ public class SecurityConfiguration {
                             "/api/v1" + UrlConstant.Pet.DELETE_PET
                     ).hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
 
+//                    auth.requestMatchers(
+//                            "/api/v1" + UrlConstant.PetService.GET_MY_PET_SERVICES,
+//                            "/api/v1" + UrlConstant.PetService.GET_PET_SERVICE_DETAIL,
+//                            "/api/v1" + UrlConstant.PetService.CREATE_PET_SERVICE,
+//                            "/api/v1" + UrlConstant.PetService.UPDATE_PET_SERVICE,
+//                            "/api/v1" + UrlConstant.PetService.DELETE_PET_SERVICE
+//                    ).hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
+
+                    auth.requestMatchers(
+                            "/api/v1" + UrlConstant.ProductReview.GET_REVIEWS_BY_PRODUCT,
+                            "/api/v1" + UrlConstant.ProductReview.CREATE_REVIEW,
+                            "/api/v1" + UrlConstant.ProductReview.UPDATE_REVIEW,
+                            "/api/v1" + UrlConstant.ProductReview.DELETE_REVIEW
+                    ).hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
+
+                    auth.requestMatchers(
+                            "/api/v1" + UrlConstant.Payment.CREATE_PAYMENT
+                    ).hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
+
+                    auth.requestMatchers(
+                            "/api/v1" + UrlConstant.Payment.HANDLE_RETURN
+                    ).permitAll();
 
 
                     // Tất cả request còn lại cần đăng nhập

@@ -46,7 +46,7 @@ public class ProductImageServiceImpl implements ProductImageService {
                 () -> new NotFoundException("Product not found with id: " + productId)
         );
 
-        ResUploadFileResultDto uploadFileResultDto = fileService.uploadFile(files, "products");
+        ResUploadFileResultDto uploadFileResultDto = fileService.uploadListFile(files, "products");
         if(uploadFileResultDto.getResUploadFileDtoList() != null && !uploadFileResultDto.getResUploadFileDtoList().isEmpty()){
             List<ProductImage> images = uploadFileResultDto.getResUploadFileDtoList().stream()
                     .map(resUploadFileDto -> {

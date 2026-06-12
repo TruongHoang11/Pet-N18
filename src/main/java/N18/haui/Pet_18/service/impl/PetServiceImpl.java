@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class PetServiceImpl implements PetService {
     private final PetMapper petMapper;
 
     private void checkExistPet(String userId, String petName){
-        if(petRepository.existsByUserIdAndName(userId, petName)){
+        if(petRepository.existsByUserIdAndNameAndDeleteFlagFalse(userId, petName)){
             throw new BadRequestException("[PET]  Pet with name " + petName + " already exists for this user.");
         }
     }
@@ -100,7 +101,6 @@ public class PetServiceImpl implements PetService {
         Pet pet = getPetAndValidate(id, currentUser);
 
         pet.setDeleteFlag(Boolean.TRUE);
-        pet.setActiveFlag(Boolean.FALSE);
         petRepository.save(pet);
 
         log.info("[PET] Xóa thành công thú cưng ID: {}", id);
@@ -149,7 +149,7 @@ public class PetServiceImpl implements PetService {
 
         User currentUser = userService.getUserLogin();
         List<Pet> pets = petRepository
-                .findByUserIdAndDeleteFlagFalseAndActiveFlagTrue(currentUser.getId());
+                .findByUserIdAndDeleteFlagFalse(currentUser.getId());
 
         log.info("[PET] User ID: {} | Số thú cưng: {}", currentUser.getId(), pets.size());
         return petMapper.toDtoList(pets);
@@ -168,8 +168,8 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public ResultPaginationDto getAllPet(List<String> filter, Pageable pageable) {
-        SpecificationBuilder<Pet> spec = new SpecificationBuilder<>();
-        FilterProcessor.process(spec, filter);
+        SpecificationBuilder<Pet> specificationBuilder = new SpecificationBuilder<>();
+        FilterProcessor.process(specificationBuilder, filter);
 
         pageable = PageRequest.of(
                 pageable.getPageNumber(),
@@ -177,7 +177,12 @@ public class PetServiceImpl implements PetService {
                 Sort.by("createdDate").descending()
         );
 
-        Page<Pet> petPage = petRepository.findAll(spec.build(), pageable);
+        Specification<Pet> spec = specificationBuilder.build();
+        Specification<Pet> softDeleteSpec = (root, query, cb) -> cb.equal(root.get("deleteFlag"), false);
+
+        Specification<Pet> finalSpec = (spec == null) ? softDeleteSpec : spec.and(softDeleteSpec);
+
+        Page<Pet> petPage = petRepository.findAll(finalSpec, pageable);
 
         ResultPaginationDto resultPaginationDTO = new ResultPaginationDto();
         ResultPaginationDto.Meta meta = new ResultPaginationDto.Meta();
@@ -203,7 +208,7 @@ public class PetServiceImpl implements PetService {
 
     // Helper - chỉ tìm pet + check deleteFlag + activeFlag (dùng cho Admin)
     private Pet getPetById(Long petId) {
-        Pet pet = petRepository.findById(petId)
+        Pet pet = petRepository.findByIdAndDeleteFlagFalse(petId)
                 .orElseThrow(() -> {
                     log.warn("[NOT_FOUND] Không tìm thấy thú cưng ID: {}", petId);
                     return new NotFoundException("[PET] Không tìm thấy thú cưng ID: " + petId);

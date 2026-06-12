@@ -110,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 6. Tạo OrderDetail + tính totalAmount
         BigDecimal totalAmount = BigDecimal.ZERO;
-        for (CartItem item : cart.getCartItems()) {
+        for (CartItem item : selectedItems) {
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrder(order);
             orderDetail.setProduct(item.getProduct());
@@ -167,6 +167,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderDto createOrderFromBuyNow(ReqCreateOrderBuyNow req) {
         log.info("[ORDER] Bắt đầu tạo đơn hàng mua ngay | Product ID: {}", req.getProductId());
 

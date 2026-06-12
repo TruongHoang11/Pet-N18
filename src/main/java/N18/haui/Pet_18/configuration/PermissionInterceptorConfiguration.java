@@ -31,6 +31,8 @@ public class PermissionInterceptorConfiguration implements WebMvcConfigurer {
                 prefix + UrlConstant.Product.GET_PRODUCTS,
                 prefix + UrlConstant.Product.GET_PRODUCT,
 
+                prefix + UrlConstant.Payment.HANDLE_RETURN,
+
                 // Swagger / OpenAPI
                 "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
 

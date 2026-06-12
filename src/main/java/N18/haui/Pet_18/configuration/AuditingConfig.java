@@ -22,17 +22,26 @@ public class AuditingConfig {
     }
 
 
-
-     public class AuditorAwareImpl implements AuditorAware<String>{
+    public class AuditorAwareImpl implements AuditorAware<String> {
 
         @Override
         public Optional<String> getCurrentAuditor() {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+
+            // Bỏ qua nếu null, không xác thực, hoặc là anonymous
+            if (authentication == null
+                    || authentication instanceof AnonymousAuthenticationToken
+                    || !authentication.isAuthenticated()) {
                 return Optional.empty();
             }
-            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-            return Optional.ofNullable(userPrincipal.getId());
+
+            try {
+                UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+                return Optional.ofNullable(userPrincipal.getId());
+            } catch (Exception e) {
+                // Nếu lỗi bất kỳ, bỏ qua audit
+                return Optional.empty();
+            }
         }
     }
 }

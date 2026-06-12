@@ -197,6 +197,13 @@ public class SecurityConfiguration {
                             "/api/v1" + UrlConstant.ProductReview.DELETE_REVIEW
                     ).hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
 
+                    auth.requestMatchers(
+                            "/api/v1" + UrlConstant.Payment.CREATE_PAYMENT
+                    ).hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
+
+                    auth.requestMatchers(
+                            "/api/v1" + UrlConstant.Payment.HANDLE_RETURN
+                    ).permitAll();
 
 
                     // Tất cả request còn lại cần đăng nhập

@@ -41,3 +41,10 @@ jwt:
 hoang:
   upload-file:
     base-uri: D:/BackendJava2026/upload/
+
+
+vnpay:
+  tmn-code: R7MW0K0K
+  hash-secret: FZLQXWR945VMAT7EE0HP4TM1PIK4HSYT
+  url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  return-url: http://localhost:8080/api/v1/payment/vnpay/return

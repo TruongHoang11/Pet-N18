@@ -208,4 +208,16 @@ public class UrlConstant {
     private Category() {}
   }
 
+
+  public static class Payment {
+    private static final String PRE_FIX = "/payment/vnpay";
+    // Admin
+    public static final String CREATE_PAYMENT = PRE_FIX + "/create";
+    public static final String HANDLE_RETURN = PRE_FIX + "/return";
+
+
+
+    private Payment() {}
+  }
+
 }

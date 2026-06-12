@@ -1,8 +1,12 @@
 # Luật kết hợp cho đề xuất sản phẩm 
-import pandas as pd
 import json
 import pickle
+import re
+from pathlib import Path
 
+import pandas as pd
+import mysql.connector
+import yaml
 from mlxtend.frequent_patterns import apriori
 from mlxtend.frequent_patterns import association_rules
 
@@ -10,28 +14,80 @@ from mlxtend.frequent_patterns import association_rules
 # CONFIG
 # ======================================
 
-DATASET_PATH = "dataset.csv"
-
-OUTPUT_JSON = "association_rules.json"
-OUTPUT_MODEL = "model.pkl"
-
+BASE_DIR = Path(__file__).resolve().parent
+REPO_ROOT = BASE_DIR.parent.parent
+CONFIG_PATH = REPO_ROOT / "src" / "main" / "resources" / "application.yaml"
+OUTPUT_DIR = REPO_ROOT / "src" / "main" / "resources" / "recommendation" / "service"
+OUTPUT_JSON = OUTPUT_DIR / "association_rules.json"
+OUTPUT_MODEL = OUTPUT_DIR / "model.pkl"
 MIN_SUPPORT = 0.01
 MIN_CONFIDENCE = 0.10
+SQL_QUERY = """
+SELECT bd.booking_id, bd.service_id
+FROM tbl_booking_details bd
+JOIN tbl_bookings b ON bd.booking_id = b.id
+ORDER BY b.created_date DESC
+LIMIT 50
+"""
 
 # ======================================
-# LOAD DATA
+# HELPERS
 # ======================================
 
-print("Loading dataset...")
+def load_db_config():
+    with open(CONFIG_PATH, encoding="utf-8") as f:
+        config = yaml.safe_load(f)
 
-df = pd.read_csv(DATASET_PATH)
+    ds = config["spring"]["datasource"]
+    url = ds["url"]
+    match = re.search(r"jdbc:mysql://([^:/?]+)(?::(\d+))?/([^?]+)", url)
+    if not match:
+        raise ValueError(f"Invalid JDBC URL: {url}")
 
-required_columns = {"booking_id", "service_id"}
+    host = match.group(1)
+    port = int(match.group(2) or 3306)
+    database = match.group(3)
 
-if not required_columns.issubset(df.columns):
-    raise Exception(
-        f"Dataset must contain columns: {required_columns}"
-    )
+    return {
+        "host": host,
+        "port": port,
+        "database": database,
+        "user": ds["username"],
+        "password": ds["password"],
+        "charset": "utf8mb4",
+        "use_unicode": True,
+    }
+
+
+def fetch_data():
+    db_config = load_db_config()
+    conn = mysql.connector.connect(**db_config)
+    try:
+        with conn.cursor(dictionary=True) as cursor:
+            cursor.execute(SQL_QUERY)
+            rows = cursor.fetchall()
+    finally:
+        conn.close()
+
+    if not rows:
+        raise Exception("No rows returned from the database query.")
+
+    df = pd.DataFrame(rows)
+    required_columns = {"booking_id", "service_id"}
+    if not required_columns.issubset(df.columns):
+        raise Exception(f"Query must return columns: {required_columns}")
+
+    return df
+
+
+def ensure_output_dir():
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+
+print("Loading dataset from MySQL...")
+
+df = fetch_data()
+ensure_output_dir()
 
 print(f"Rows: {len(df)}")
 print(df.head())
@@ -88,15 +144,27 @@ rules = association_rules(
 )
 
 if rules.empty:
-    raise Exception(
-        "No association rules found. "
-        "Try reducing MIN_CONFIDENCE."
+    fallback_confidence = 0.01
+    print(
+        f"No rules found at confidence {MIN_CONFIDENCE}. "
+        f"Retrying with fallback confidence {fallback_confidence}..."
+    )
+    rules = association_rules(
+        frequent_itemsets,
+        metric="confidence",
+        min_threshold=fallback_confidence
     )
 
-rules = rules.sort_values(
-    by=["confidence", "lift"],
-    ascending=False
-)
+if rules.empty:
+    print(
+        "Still no association rules found after fallback. "
+        "Saving empty rule set."
+    )
+else:
+    rules = rules.sort_values(
+        by=["confidence", "lift"],
+        ascending=False
+    )
 
 print(f"Rules found: {len(rules)}")
 

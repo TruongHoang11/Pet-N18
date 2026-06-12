@@ -4,6 +4,7 @@ import N18.haui.Pet_18.domain.dto.response.ResUploadFileResultDto;
 import N18.haui.Pet_18.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -16,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,7 +45,16 @@ public class FileServiceImpl implements FileService {
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     );
 
-    @Override
+
+    private static final List<String> ALLOWED_EXTENSIONS_IMAGE = Arrays.asList("jpg", "jpeg", "png", "webp", "gif");
+    private static final List<String> ALLOWED_MIME_TYPES_IMAGE = Arrays.asList(
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/gif"
+    );
+
+
     public void createDirectory(String folder) {
         // Paths.get tự động xử lý dấu gạch chéo chuẩn theo OS (Windows/Linux)
         Path targetPath = Paths.get(baseUri, folder).toAbsolutePath().normalize();
@@ -64,7 +75,7 @@ public class FileServiceImpl implements FileService {
 
 
     @Override
-    public ResUploadFileResultDto uploadFile(List<MultipartFile> files, String folder) {
+    public ResUploadFileResultDto uploadListFile(List<MultipartFile> files, String folder) {
         createDirectory(folder);
 
         List<ResUploadFileResultDto.ResUploadFileDto> resUploadFileDtoList = new ArrayList<>();
@@ -74,7 +85,7 @@ public class FileServiceImpl implements FileService {
             String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
             // 1. Validate file
-            String validationError = validateFile(file, originalFileName);
+            String validationError = validateAllFile(file, originalFileName);
             if (validationError != null) {
                 resUploadFileFailedList.add(originalFileName + " -> " + validationError);
                 continue; // Bỏ qua nếu có bất kỳ lỗi validate nào
@@ -100,11 +111,8 @@ public class FileServiceImpl implements FileService {
         return new ResUploadFileResultDto(resUploadFileDtoList, resUploadFileFailedList);
     }
 
-    /**
-     * Hàm chuyên biệt để validate tính hợp lệ của file.
-     * @return null nếu file hợp lệ, hoặc String chứa thông báo lỗi cụ thể nếu không hợp lệ.
-     */
-    private String validateFile(MultipartFile file, String originalFileName) {
+
+    private String validateAllFile(MultipartFile file, String originalFileName) {
         if (file.isEmpty()) {
             return "File trống";
         }
@@ -127,16 +135,11 @@ public class FileServiceImpl implements FileService {
         return null; // File hoàn toàn sạch sẽ và hợp lệ
     }
 
-    /**
-     * Hàm chuyên biệt xử lý việc sinh tên file duy nhất.
-     */
+
     private String generateUniqueFileName(String originalFileName) {
         return System.currentTimeMillis() + "-" + originalFileName;
     }
 
-    /**
-     * Hàm chuyên biệt xử lý việc ghi byte dữ liệu xuống ổ cứng.
-     */
     private void saveFileToStorage(MultipartFile file, String folder, String finalName) throws IOException {
         //.toAbsolutePath(): Chuyển toàn bộ đường dẫn thành đường dẫn tuyệt đối (bắt đầu từ gốc ổ đĩa hoặc gốc hệ thống).
         //.normalize(): Đây chính là hàm sẽ triệt tiêu hoàn toàn các ký tự nguy hiểm.
@@ -186,6 +189,53 @@ public class FileServiceImpl implements FileService {
         }
     }
 
+    @Override
+    public ResUploadFileResultDto.ResUploadFileDto uploadFile(MultipartFile file, String folder) throws URISyntaxException, IOException {
+        createDirectory(folder);
+
+        String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+
+        // Validate file
+        String validationError = validFileImage(file, originalFileName);
+        if (validationError != null) {
+            throw new FileUploadException(validationError);
+        }
+
+        // Save file
+        String finalName = generateUniqueFileName(originalFileName);
+        saveFileToStorage(file, folder, finalName);
+
+        ResUploadFileResultDto.ResUploadFileDto dto = new ResUploadFileResultDto.ResUploadFileDto();
+        dto.setFileName(finalName);
+        dto.setUploadedAt(LocalDateTime.now());
+
+
+        return dto;
+
+    }
+
+    private String validFileImage(MultipartFile file, String originalFileName){
+        if (file.isEmpty()) {
+            return "File trống";
+        }
+
+        // Kiểm tra Extension
+        String finalOriginalFileName = originalFileName.toLowerCase();
+        boolean isValidExtension = ALLOWED_EXTENSIONS_IMAGE.stream()
+                .anyMatch(ext -> finalOriginalFileName.endsWith("." + ext));
+
+        if (!isValidExtension) {
+            return "Định dạng file không được hỗ trợ";
+        }
+
+        // Kiểm tra MimeType
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_MIME_TYPES_IMAGE.contains(contentType.toLowerCase())) {
+            return "Loại nội dung (MimeType) không hợp lệ";
+        }
+
+        return null; // File hoàn toàn sạch sẽ và hợp lệ
+    }
 
 
 }

@@ -3,6 +3,7 @@ package N18.haui.Pet_18.controller;
 import N18.haui.Pet_18.base.RestApiV1;
 import N18.haui.Pet_18.base.VsResponseUtil;
 import N18.haui.Pet_18.constant.UrlConstant;
+import N18.haui.Pet_18.domain.dto.request.ReqUserUpdateProfile;
 import N18.haui.Pet_18.domain.dto.request.UserCreateDto;
 import N18.haui.Pet_18.domain.dto.request.UserUpdateDto;
 import N18.haui.Pet_18.domain.dto.response.CommonResponseDto;
@@ -14,7 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @RestApiV1
@@ -63,5 +67,20 @@ public class UserController {
 
     }
 
+    @PostMapping(UrlConstant.User.ADD_AVATAR)
+    public ResponseEntity<?> addAvatar(@RequestParam MultipartFile file,
+                                       @PathVariable  String userId
+                                       ) throws URISyntaxException, IOException {
+        CommonResponseDto commonResponseDto =  userService.addAvatar(userId, file);;
+            return VsResponseUtil.success(HttpStatus.OK, commonResponseDto);
+
+
+}
+
+        @PutMapping(UrlConstant.User.UPDATE_PROFILE)
+        public ResponseEntity<?> updateProfile(@RequestBody @Valid ReqUserUpdateProfile reqUserUpdateProfile){
+            UserDto userDto = userService.updateProfile(reqUserUpdateProfile);
+            return VsResponseUtil.success(HttpStatus.OK, userDto);
+        }
 
 }

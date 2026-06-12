@@ -3,9 +3,11 @@ package N18.haui.Pet_18.service.impl;
 import N18.haui.Pet_18.constant.GenderEnum;
 import N18.haui.Pet_18.constant.RoleConstant;
 import N18.haui.Pet_18.domain.dto.pagination.ResultPaginationDto;
+import N18.haui.Pet_18.domain.dto.request.ReqUserUpdateProfile;
 import N18.haui.Pet_18.domain.dto.request.UserCreateDto;
 import N18.haui.Pet_18.domain.dto.request.UserUpdateDto;
 import N18.haui.Pet_18.domain.dto.response.CommonResponseDto;
+import N18.haui.Pet_18.domain.dto.response.ResUploadFileResultDto;
 import N18.haui.Pet_18.domain.dto.response.UserDto;
 import N18.haui.Pet_18.domain.entity.Role;
 import N18.haui.Pet_18.domain.entity.User;
@@ -18,6 +20,7 @@ import N18.haui.Pet_18.exception.UnauthorizedException;
 import N18.haui.Pet_18.repository.RoleRepository;
 import N18.haui.Pet_18.repository.UserRepository;
 import N18.haui.Pet_18.security.SecurityUtil;
+import N18.haui.Pet_18.service.FileService;
 import N18.haui.Pet_18.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +28,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @Service
@@ -34,6 +40,9 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
+    private final FileService fileService;
+
+
 
 
     public void checkExistedUserByEmail(String email) {
@@ -178,5 +187,31 @@ public class UserServiceImpl implements UserService {
     public User getUserWithRoleAndPermissions(String id) {
         return userRepository.findByIdWithFullInfor(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+    }
+
+    @Override
+    public CommonResponseDto addAvatar(String userId, MultipartFile file) throws URISyntaxException, IOException {
+
+       User currentUser = this.getUserLogin();
+
+        ResUploadFileResultDto.ResUploadFileDto uploadFileResultDto = fileService.uploadFile(file, "avatars");
+        if(uploadFileResultDto != null){
+            String avatarUrl = uploadFileResultDto.getFileName();
+            currentUser.setAvatarUrl(avatarUrl);
+            userRepository.save(currentUser);
+            return new CommonResponseDto(true, "Upload avatar success");
+        }
+        return new CommonResponseDto(false, "Không có ảnh nào được thêm (file lỗi hoặc trống");
+    }
+
+    @Override
+    public UserDto updateProfile(ReqUserUpdateProfile reqUserUpdateProfile) {
+        User currentUser = this.getUserLogin();
+        currentUser.setName(reqUserUpdateProfile.getName());
+        currentUser.setDateOfBirth(reqUserUpdateProfile.getDateOfBirth());
+        currentUser.setGender(GenderEnum.valueOf(reqUserUpdateProfile.getGender()));
+        userRepository.save(currentUser);
+        return userMapper.toUserDto(currentUser);
+
     }
 }

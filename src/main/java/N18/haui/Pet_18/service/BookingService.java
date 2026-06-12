@@ -3,7 +3,11 @@ package N18.haui.Pet_18.service;
 import N18.haui.Pet_18.domain.dto.pagination.ResultPaginationDto;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateBooking;
 import N18.haui.Pet_18.domain.dto.response.BookingDto;
+import N18.haui.Pet_18.domain.dto.response.BookingTimeSlotDto;
 import org.springframework.data.domain.Pageable;
+
+import java.time.LocalDate;
+import java.util.List;
 
 public interface BookingService {
 
@@ -16,6 +20,8 @@ public interface BookingService {
     ResultPaginationDto getBookingsByStatus(String status, Pageable pageable);
 
     ResultPaginationDto getAllBookings(Pageable pageable);
+
+    List<BookingTimeSlotDto> getBookedTimeSlots();
 
     BookingDto cancelBooking(Long id);
 

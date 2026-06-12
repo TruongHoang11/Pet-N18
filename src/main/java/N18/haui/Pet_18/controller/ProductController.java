@@ -4,9 +4,11 @@ import N18.haui.Pet_18.base.RestApiV1;
 import N18.haui.Pet_18.base.VsResponseUtil;
 import N18.haui.Pet_18.constant.UrlConstant;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateProduct;
+import N18.haui.Pet_18.domain.dto.request.ReqRecommendationDto;
 import N18.haui.Pet_18.domain.dto.request.ReqUpdateProduct;
 import N18.haui.Pet_18.domain.dto.response.CommonResponseDto;
 import N18.haui.Pet_18.domain.dto.response.ProductDto;
+import N18.haui.Pet_18.domain.dto.response.ResRecommendationDto;
 import N18.haui.Pet_18.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -56,5 +58,10 @@ public class ProductController {
 
         return VsResponseUtil.success(HttpStatus.OK,productService.getAllProduct(filter,pageable) );
 
+    }
+
+    @PostMapping(UrlConstant.Product.GET_RECOMMENDATIONS)
+    public ResponseEntity<?> recommendProducts(@Valid @RequestBody ReqRecommendationDto req) {
+        return VsResponseUtil.success(HttpStatus.OK, new ResRecommendationDto(productService.getRecommendedProductIds(req.getItemIds())));
     }
 }

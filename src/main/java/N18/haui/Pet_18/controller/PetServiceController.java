@@ -4,7 +4,9 @@ import N18.haui.Pet_18.base.RestApiV1;
 import N18.haui.Pet_18.base.VsResponseUtil;
 import N18.haui.Pet_18.constant.UrlConstant;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateService;
+import N18.haui.Pet_18.domain.dto.request.ReqRecommendationDto;
 import N18.haui.Pet_18.domain.dto.request.ReqUpdateService;
+import N18.haui.Pet_18.domain.dto.response.ResRecommendationDto;
 import N18.haui.Pet_18.service.PetServiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,7 @@ public class PetServiceController {
         return VsResponseUtil.success(HttpStatus.CREATED, petServiceService.createService(req));
     }
 
-    @PatchMapping(UrlConstant.PetService.UPDATE_SERVICE)
+    @PutMapping(UrlConstant.PetService.UPDATE_SERVICE)
     public ResponseEntity<?> updateService(@Valid @RequestBody ReqUpdateService req) {
         return VsResponseUtil.success(HttpStatus.OK, petServiceService.updateService(req));
     }
@@ -55,13 +57,17 @@ public class PetServiceController {
 
     @DeleteMapping(UrlConstant.PetService.DELETE_SERVICE)
     public ResponseEntity<?> deleteService(@PathVariable Long id) {
-        petServiceService.deleteService(id);
-        return VsResponseUtil.success(HttpStatus.NO_CONTENT, null);
+        return VsResponseUtil.success(HttpStatus.NO_CONTENT, petServiceService.deleteService(id));
     }
 
     @GetMapping(UrlConstant.PetService.GET_TOP_SERVICES)
     public ResponseEntity<?> getTopServices(
             @RequestParam(defaultValue = "6") Integer limit) {
         return VsResponseUtil.success(HttpStatus.OK, petServiceService.getTopServices(limit));
+    }
+
+    @PostMapping(UrlConstant.PetService.GET_RECOMMENDATIONS)
+    public ResponseEntity<?> recommendServices(@Valid @RequestBody ReqRecommendationDto req) {
+        return VsResponseUtil.success(HttpStatus.OK, new ResRecommendationDto(petServiceService.getRecommendedServiceIds(req.getItemIds())));
     }
 }

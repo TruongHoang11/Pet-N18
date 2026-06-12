@@ -1,6 +1,8 @@
 package N18.haui.Pet_18.domain.entity;
 
 
+import java.util.List;
+
 import N18.haui.Pet_18.domain.dto.common.FlagUserDateAuditing;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,14 +30,22 @@ public class Menu extends FlagUserDateAuditing {
     @Column(name = "path")
     private String path;
 
+    private String icon;
 
     private Integer sortOrder;
-
-    private boolean isActive;
 
     @ManyToOne //NHIỀU menu con thuộc về MỘT menu cha
     @JoinColumn(name = "parent_id")
     private Menu parent;
 
-
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Menu> children;
+    
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "menu_roles",
+        joinColumns = @JoinColumn(name = "menu_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles;
 }

@@ -12,9 +12,13 @@ import java.util.List;
 @Repository
 public interface PetServiceRepository extends JpaRepository<PetService, Long>, JpaSpecificationExecutor<PetService> {
 
-    Page<PetService> findByCategoryId(Long categoryId, Pageable pageable);
+    Page<PetService> findByDeleteFlagFalseAndActiveFlagTrue(Pageable pageable);
 
-    List<PetService> findByCategoryId(Long categoryId);
+    Page<PetService> findByDeleteFlagFalseAndActiveFlagTrueAndNameContainingIgnoreCase(String name, Pageable pageable);
 
-    Page<PetService> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<PetService> findByDeleteFlagFalseAndActiveFlagTrueAndCategoryId(Long categoryId, Pageable pageable);
+
+    List<PetService> findByDeleteFlagFalseAndActiveFlagTrueAndCategoryId(Long categoryId);
+
+    java.util.Optional<PetService> findByIdAndDeleteFlagFalseAndActiveFlagTrue(Long id);
 }

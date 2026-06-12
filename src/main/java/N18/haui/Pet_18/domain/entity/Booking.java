@@ -58,10 +58,6 @@ public class Booking extends FlagUserDateAuditing {
     @JsonIgnore
     private List<BookingDetail> bookingDetails; // Danh sách dịch vụ trong lịch hẹn đó
 
-    @ManyToOne
-    @JoinColumn(name = "staff_id")
-    private Staff staff; // Nhân viên thực hiện lịch hẹn đó
-
 
 
 

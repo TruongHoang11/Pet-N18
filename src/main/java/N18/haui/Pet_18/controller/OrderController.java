@@ -74,8 +74,4 @@ public class OrderController {
         return VsResponseUtil.success(HttpStatus.OK,orderService.getMyOrders(status, pageable) );
 
     }
-
-
-
-
 }

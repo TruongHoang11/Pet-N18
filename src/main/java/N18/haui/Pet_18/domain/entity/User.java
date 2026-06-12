@@ -81,9 +81,6 @@ public class User extends FlagUserDateAuditing implements Serializable {
     private List<PetServiceReview> petServiceReviews;
 
     @OneToOne(mappedBy = "user")
-    private Staff staff;
-
-    @OneToOne(mappedBy = "user")
     private Cart cart;
 
     @Column(name = "avatar_url")

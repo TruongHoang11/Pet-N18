@@ -142,21 +142,21 @@ public class OrderServiceImpl implements OrderService {
 
 
         // // 10. Trừ tồn kho → ghi InventoryTransaction
-        for (OrderDetail orderDetail : order.getOrderDetails()) {
-            Inventory inventory = inventoryRepository.findByProductId(orderDetail.getProduct().getId()).get();
-            Integer oldQuantity = inventory.getQuantity();
-            Integer newQuantity = oldQuantity - orderDetail.getQuantity();
-            inventory.setQuantity(newQuantity);
-            inventoryRepository.save(inventory);
-
-            InventoryTransaction inventoryTransaction = new InventoryTransaction();
-            inventoryTransaction.setInventory(inventory);
-            inventoryTransaction.setQuantity(orderDetail.getQuantity());
-            inventoryTransaction.setType(TypeInventory.EXPORT);
-            inventoryTransaction.setNote("Export product to order");
-            inventoryTransactionRepository.save(inventoryTransaction);
-
-        }
+//        for (OrderDetail orderDetail : order.getOrderDetails()) {
+//            Inventory inventory = inventoryRepository.findByProductId(orderDetail.getProduct().getId()).get();
+//            Integer oldQuantity = inventory.getQuantity();
+//            Integer newQuantity = oldQuantity - orderDetail.getQuantity();
+//            inventory.setQuantity(newQuantity);
+//            inventoryRepository.save(inventory);
+//
+//            InventoryTransaction inventoryTransaction = new InventoryTransaction();
+//            inventoryTransaction.setInventory(inventory);
+//            inventoryTransaction.setQuantity(orderDetail.getQuantity());
+//            inventoryTransaction.setType(TypeInventory.EXPORT);
+//            inventoryTransaction.setNote("Export product to order");
+//            inventoryTransactionRepository.save(inventoryTransaction);
+//
+//        }
 
         // 11. Xóa giỏ hàng
         cart.getCartItems().removeAll(selectedItems);
@@ -247,20 +247,19 @@ public class OrderServiceImpl implements OrderService {
 
 
         //Trừ tồn kho → ghi InventoryTransaction
-        Integer oldQty = inventory.getQuantity();
-        Integer newQty = oldQty - req.getQuantity();
-        inventory.setQuantity(newQty);
-        inventoryRepository.save(inventory);
+//        Integer oldQty = inventory.getQuantity();
+//        Integer newQty = oldQty - req.getQuantity();
+//        inventory.setQuantity(newQty);
+//        inventoryRepository.save(inventory);
+//
+//        InventoryTransaction inventoryTransaction = new InventoryTransaction();
+//        inventoryTransaction.setInventory(inventory);
+//        inventoryTransaction.setQuantity(req.getQuantity());
+//        inventoryTransaction.setType(TypeInventory.EXPORT);
+//        inventoryTransaction.setNote("Export product to order");
+//        inventoryTransactionRepository.save(inventoryTransaction);
 
-        InventoryTransaction inventoryTransaction = new InventoryTransaction();
-        inventoryTransaction.setInventory(inventory);
-        inventoryTransaction.setQuantity(req.getQuantity());
-        inventoryTransaction.setType(TypeInventory.EXPORT);
-        inventoryTransaction.setNote("Export product to order");
-        inventoryTransactionRepository.save(inventoryTransaction);
 
-        log.info("[INVENTORY] Trừ kho Product ID: {} | {} → {}",
-                req.getProductId(), oldQty, newQty);
 
         return orderMapper.toDto(order);
     }

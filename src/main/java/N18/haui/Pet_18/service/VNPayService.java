@@ -3,9 +3,15 @@ package N18.haui.Pet_18.service;
 import N18.haui.Pet_18.configuration.VNPayConfig;
 import N18.haui.Pet_18.constant.OrderStatus;
 import N18.haui.Pet_18.constant.PaymentStatus;
+import N18.haui.Pet_18.constant.TypeInventory;
+import N18.haui.Pet_18.domain.entity.Inventory;
+import N18.haui.Pet_18.domain.entity.InventoryTransaction;
 import N18.haui.Pet_18.domain.entity.Order;
+import N18.haui.Pet_18.domain.entity.OrderDetail;
 import N18.haui.Pet_18.exception.BadRequestException;
 import N18.haui.Pet_18.exception.NotFoundException;
+import N18.haui.Pet_18.repository.InventoryRepository;
+import N18.haui.Pet_18.repository.InventoryTransactionRepository;
 import N18.haui.Pet_18.repository.OrderRepository;
 import N18.haui.Pet_18.repository.PaymentRepository;
 import N18.haui.Pet_18.util.VNPayUtil;
@@ -34,6 +40,9 @@ public class VNPayService {
     private final VNPayUtil vnPayUtil;
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
+
+    private final InventoryRepository inventoryRepository;
+    private final InventoryTransactionRepository inventoryTransactionRepository;
 
     public String createPaymentUrl(Long orderId, HttpServletRequest request) {
 
@@ -181,7 +190,26 @@ public class VNPayService {
             // Thanh toán thành công
             order.getPayment().setStatus(PaymentStatus.SUCCESS);
             order.getPayment().setTransactionId(transactionId);
+            order.getPayment().setPaymentMethod("BANKING_VNPAY");
             order.setStatus(OrderStatus.PROCESSING);
+
+
+            for (OrderDetail orderDetail : order.getOrderDetails()) {
+                Inventory inventory = inventoryRepository.findByProductId(orderDetail.getProduct().getId()).orElseThrow(
+                        () -> new NotFoundException("[ORDER] Sản phẩm không tồn tại trong kho")
+                );
+                Integer oldQuantity = inventory.getQuantity();
+                Integer newQuantity = oldQuantity - orderDetail.getQuantity();
+                inventory.setQuantity(newQuantity);
+                inventoryRepository.save(inventory);
+
+                InventoryTransaction inventoryTransaction = new InventoryTransaction();
+                inventoryTransaction.setInventory(inventory);
+                inventoryTransaction.setQuantity(orderDetail.getQuantity());
+                inventoryTransaction.setType(TypeInventory.EXPORT);
+                inventoryTransaction.setNote("Export product to order after successful payment");
+                inventoryTransactionRepository.save(inventoryTransaction);
+            }
 
             log.info("[VNPAY] Thanh toán thành công | Order ID: {}", orderId);
         } else {

@@ -3,10 +3,10 @@ package N18.haui.Pet_18.constant;
 public class UrlConstant {
 
   public static class ForgetPassword {
-    public static final String PREFIX= "/forget-password";
-    public static final String VERIFY_EMAIL =PREFIX+ "/email-verification/{email}";
-    public static final String VERIFY_OTP = PREFIX+"/otp-verification";
-    public static final String CHANGE_PASSWORD =PREFIX+ "/password-update/{email}";
+    public static final String PREFIX = "/forget-password";
+    public static final String VERIFY_EMAIL = PREFIX + "/email-verification/{email}";
+    public static final String VERIFY_OTP = PREFIX + "/otp-verification";
+    public static final String CHANGE_PASSWORD = PREFIX + "/password-update/{email}";
   }
 
   public static class Auth {
@@ -14,7 +14,9 @@ public class UrlConstant {
     public static final String REGISTER = PRE_FIX + "/register";
     public static final String LOGIN = PRE_FIX + "/login";
     public static final String LOGOUT = PRE_FIX + "/logout";
-    private Auth() {}
+
+    private Auth() {
+    }
   }
 
   public static class User {
@@ -28,7 +30,9 @@ public class UrlConstant {
     public static final String CHANGE_USER_STATUS = PRE_FIX + "/{id}/status";
     public static final String ADD_AVATAR = PRE_FIX + "/{id}/avatar";
     public static final String UPDATE_PROFILE = PRE_FIX + "/update-profile";
-    private User() {}
+
+    private User() {
+    }
   }
 
   public static class Product {
@@ -39,7 +43,9 @@ public class UrlConstant {
     public static final String UPDATE_PRODUCT = PRE_FIX;
     public static final String DELETE_PRODUCT = PRE_FIX + "/{id}";
     public static final String GET_RECOMMENDATIONS = PRE_FIX + "/recommendations";
-    private Product() {}
+
+    private Product() {
+    }
   }
 
   public static class ProductImages {
@@ -47,7 +53,9 @@ public class UrlConstant {
     public static final String ADD_IMAGES = PRE_FIX;
     public static final String DELETE_IMAGE = PRE_FIX + "/{id}";
     public static final String SET_MAIN_IMAGE = PRE_FIX + "/set-main-image";
-    private ProductImages() {}
+
+    private ProductImages() {
+    }
   }
 
   public static class Inventory {
@@ -57,14 +65,18 @@ public class UrlConstant {
     public static final String ADJUST_PRODUCT = PRE_FIX + "/adjust";
     public static final String GET_INVENTORY_BY_PRODUCT_ID = PRE_FIX + "/{id}";
     public static final String GET_INVENTORY_TRANSACTION_HISTORY = PRE_FIX + "/transaction-history";
-    private Inventory() {}
+
+    private Inventory() {
+    }
   }
 
   public static class Cart {
     private static final String PRE_FIX = "/cart";
     public static final String GET_CART = PRE_FIX;
     public static final String DELETE_CART = PRE_FIX;
-    private Cart() {}
+
+    private Cart() {
+    }
   }
 
   public static class CartItem {
@@ -72,7 +84,9 @@ public class UrlConstant {
     public static final String ADD_CART_ITEM = PRE_FIX;
     public static final String UPDATE_CART_ITEM = PRE_FIX;
     public static final String DELETE_CART_ITEM = PRE_FIX + "/{id}";
-    private CartItem() {}
+
+    private CartItem() {
+    }
   }
 
   public static class ShippingAddress {
@@ -82,7 +96,9 @@ public class UrlConstant {
     public static final String SET_DEFAULT_ADDRESS = PRE_FIX + "/{id}/default";
     public static final String UPDATE_SHIPPING_ADDRESS = PRE_FIX;
     public static final String DELETE_SHIPPING_ADDRESS = PRE_FIX + "/{id}";
-    private ShippingAddress() {}
+
+    private ShippingAddress() {
+    }
   }
 
   public static class Order {
@@ -102,7 +118,8 @@ public class UrlConstant {
 
     public static final String UPDATE_ORDER_STATUS = ADMIN_PRE_FIX + "/status";
 
-    private Order() {}
+    private Order() {
+    }
   }
 
   public static class Pet {
@@ -121,7 +138,8 @@ public class UrlConstant {
     public static final String PATCH_DEACTIVATE_PET = ADMIN_PRE_FIX + "/{id}/deactivate";
     public static final String PATCH_ACTIVATE_PET = ADMIN_PRE_FIX + "/{id}/activate";
 
-    private Pet() {}
+    private Pet() {
+    }
   }
 
   public static class PetService {
@@ -137,7 +155,8 @@ public class UrlConstant {
     public static final String GET_TOP_SERVICES = PRE_FIX + "/top";
     public static final String GET_RECOMMENDATIONS = PRE_FIX + "/recommendations";
 
-    private PetService() {}
+    private PetService() {
+    }
   }
 
   public static class ProductReview {
@@ -159,6 +178,7 @@ public class UrlConstant {
     }
 
   }
+
   public static class PetServiceImages {
     private static final String PRE_FIX = "/service-images";
 
@@ -167,7 +187,8 @@ public class UrlConstant {
     public static final String GET_SERVICE_IMAGES = PRE_FIX + "/service/{serviceId}";
     public static final String SET_MAIN_IMAGE = PRE_FIX + "/set-main-image";
 
-    private PetServiceImages() {}
+    private PetServiceImages() {
+    }
   }
 
   public static class PetServiceReviews {
@@ -179,7 +200,8 @@ public class UrlConstant {
     public static final String GET_AVERAGE_RATING = PRE_FIX + "/{serviceId}/average-rating";
     public static final String GET_REVIEW_COUNT = PRE_FIX + "/{serviceId}/count";
 
-    private PetServiceReviews() {}
+    private PetServiceReviews() {
+    }
   }
 
   public static class Booking {
@@ -194,7 +216,8 @@ public class UrlConstant {
     public static final String CANCEL_BOOKING = PRE_FIX + "/{id}/cancel";
     public static final String UPDATE_BOOKING_STATUS = PRE_FIX + "/{id}/status";
 
-    private Booking() {}
+    private Booking() {
+    }
   }
 
 
@@ -210,7 +233,8 @@ public class UrlConstant {
     public static final String UPDATE_CATEGORY = PRE_FIX;
     public static final String DELETE_CATEGORY = PRE_FIX + "/{id}";
 
-    private Category() {}
+    private Category() {
+    }
   }
 
 
@@ -221,8 +245,28 @@ public class UrlConstant {
     public static final String HANDLE_RETURN = PRE_FIX + "/return";
 
 
+    private Payment() {
+    }
 
-    private Payment() {}
   }
+    public static class Menu {
+      private static final String PRE_FIX = "/menus";
+
+      public static final String CREATE_MENU = PRE_FIX;
+      public static final String UPDATE_MENU = PRE_FIX + "/{id}";
+      public static final String GET_MENU = PRE_FIX + "/{id}";
+      public static final String GET_ALL_MENUS = PRE_FIX;
+      public static final String SEARCH_MENUS = PRE_FIX + "/search";
+      public static final String GET_MENUS_BY_CATEGORY = PRE_FIX + "/category/{categoryId}";
+      public static final String DELETE_MENU = PRE_FIX + "/{id}";
+      public static final String GET_MENUS_TREE = PRE_FIX + "/tree";
+      public static final String GET_ACTIVE_MENUS = PRE_FIX + "/active";
+      private Menu() {}
+    }
+
+
+
+
 
 }
+

@@ -3,7 +3,6 @@ package N18.haui.Pet_18.controller;
 import N18.haui.Pet_18.base.RestApiV1;
 import N18.haui.Pet_18.base.VsResponseUtil;
 import N18.haui.Pet_18.domain.dto.request.ReqForMenu;
-import N18.haui.Pet_18.domain.dto.response.MenuDto;
 import N18.haui.Pet_18.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

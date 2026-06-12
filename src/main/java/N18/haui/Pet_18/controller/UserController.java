@@ -83,4 +83,10 @@ public class UserController {
             return VsResponseUtil.success(HttpStatus.OK, userDto);
         }
 
+        @GetMapping(UrlConstant.User.GET_PROFILE)
+        public ResponseEntity<?> getUserProfile(){
+            UserDto userDto = userService.getUserProfile();
+            return VsResponseUtil.success(HttpStatus.OK, userDto);
+        }
+
 }

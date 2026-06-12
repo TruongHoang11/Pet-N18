@@ -41,6 +41,12 @@ public class ShippingAddressController {
 
     }
 
+    @DeleteMapping(UrlConstant.ShippingAddress.DELETE_SHIPPING_ADDRESS)
+    public ResponseEntity<?> deleteShippingAddress(@PathVariable Long id){
+        return VsResponseUtil.success(HttpStatus.OK,service.deleteShippingAddress(id));
+    }
+
+
 
     @GetMapping(UrlConstant.ShippingAddress.GET_SHIPPING_ADDRESSES)
     public ResponseEntity<?> getAllShippingAddress(){

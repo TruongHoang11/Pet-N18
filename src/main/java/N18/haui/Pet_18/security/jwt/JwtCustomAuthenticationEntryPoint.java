@@ -20,6 +20,9 @@ public class JwtCustomAuthenticationEntryPoint implements org.springframework.se
   @SneakyThrows
   @Override
   public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
+    System.out.println(">>> EntryPoint blocked request: " + request.getRequestURI());
+    System.out.println(">>> Exception detail: " + authException.getMessage());
+
     MessageSource messageSource = BeanUtil.getBean(MessageSource.class);
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);

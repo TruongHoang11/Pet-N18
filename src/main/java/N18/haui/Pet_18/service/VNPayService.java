@@ -181,6 +181,7 @@ public class VNPayService {
             // Thanh toán thành công
             order.getPayment().setStatus(PaymentStatus.SUCCESS);
             order.getPayment().setTransactionId(transactionId);
+            order.setStatus(OrderStatus.PROCESSING);
 
             log.info("[VNPAY] Thanh toán thành công | Order ID: {}", orderId);
         } else {

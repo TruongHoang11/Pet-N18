@@ -40,11 +40,10 @@ public class Pet18Application {
             if(countPermission == 0){
                 List<Permission> permissionList = new ArrayList<>();
                 // User Module
-
-
-                // Product Module
-                permissionList.add(new Permission("Get all products", "/api/v1" +UrlConstant.Product.GET_PRODUCTS, "GET", "PRODUCT"));
-                permissionList.add(new Permission("Get product by id", "/api/v1" +UrlConstant.Product.GET_PRODUCT, "GET", "PRODUCT"));
+                permissionList.add(new Permission("Get current user", "/api/v1" + UrlConstant.User.GET_CURRENT_USER, "GET", "USER"));
+                permissionList.add(new Permission("Update profile", "/api/v1" + UrlConstant.User.UPDATE_PROFILE, "PUT", "USER"));
+                permissionList.add(new Permission("Add avatar", "/api/v1" + UrlConstant.User.ADD_AVATAR, "POST", "USER"));
+                permissionList.add(new Permission("Logout", "/api/v1" + UrlConstant.Auth.LOGOUT, "POST", "AUTH"));
 
 
                 // Order Module
@@ -61,17 +60,7 @@ public class Pet18Application {
                 permissionList.add(new Permission("Update a pet", "/api/v1" + UrlConstant.Pet.UPDATE_PET, "PUT", "PET"));
                 permissionList.add(new Permission("Delete a pet", "/api/v1" + UrlConstant.Pet.DELETE_PET, "DELETE", "PET"));
 
-                // Pet Service Module
-//                permissionList.add(new Permission("Get my pet services", UrlConstant.PetService.GET_MY_PET_SERVICES, "GET", "PET_SERVICE"));
-//                permissionList.add(new Permission("Get pet service detail", UrlConstant.PetService.GET_PET_SERVICE_DETAIL, "GET", "PET_SERVICE"));
-//                permissionList.add(new Permission("Create a pet service", UrlConstant.PetService.CREATE_PET_SERVICE, "POST", "PET_SERVICE"));
-//                permissionList.add(new Permission("Update a pet service", UrlConstant.PetService.UPDATE_PET_SERVICE, "PUT", "PET_SERVICE"));
-//                permissionList.add(new Permission("Delete a pet service", UrlConstant.PetService.DELETE_PET_SERVICE, "DELETE", "PET_SERVICE"));
-//                permissionList.add(new Permission("Get all pet services (Admin)", UrlConstant.PetService.GET_ALL_PET_SERVICES, "GET", "PET_SERVICE"));
-//                permissionList.add(new Permission("Deactivate a pet service (Admin)", UrlConstant.PetService.PATCH_DEACTIVATE_PET_SERVICE, "PATCH", "PET_SERVICE"));
-//                permissionList.add(new Permission("Activate a pet service (Admin)", UrlConstant.PetService.PATCH_ACTIVATE_PET_SERVICE, "PATCH", "PET_SERVICE"));
-
-            // Product Review Module
+                 // Product Review Module
                 permissionList.add(new Permission("Get reviews by product", "/api/v1" + UrlConstant.ProductReview.GET_REVIEWS_BY_PRODUCT, "GET", "REVIEW"));
                 permissionList.add(new Permission("Create a review", "/api/v1" + UrlConstant.ProductReview.CREATE_REVIEW, "POST", "REVIEW"));
                 permissionList.add(new Permission("Update a review", "/api/v1" + UrlConstant.ProductReview.UPDATE_REVIEW, "PUT", "REVIEW"));
@@ -93,6 +82,56 @@ public class Pet18Application {
                 permissionList.add(new Permission("Add item to cart", "/api/v1" + UrlConstant.CartItem.ADD_CART_ITEM, "POST", "CART_ITEM"));
                 permissionList.add(new Permission("Update cart item", "/api/v1" + UrlConstant.CartItem.UPDATE_CART_ITEM, "PUT", "CART_ITEM"));
                 permissionList.add(new Permission("Delete cart item", "/api/v1" + UrlConstant.CartItem.DELETE_CART_ITEM, "DELETE", "CART_ITEM"));
+
+                // Booking Module
+                permissionList.add(new Permission("Create booking", "/api/v1" + UrlConstant.Booking.CREATE_BOOKING, "POST", "BOOKING"));
+                permissionList.add(new Permission("Get my bookings", "/api/v1" + UrlConstant.Booking.GET_MY_BOOKINGS, "GET", "BOOKING"));
+                permissionList.add(new Permission("Cancel booking", "/api/v1" + UrlConstant.Booking.CANCEL_BOOKING, "PATCH", "BOOKING"));
+                permissionList.add(new Permission("Get a booking", "/api/v1" + UrlConstant.Booking.GET_BOOKING, "GET", "BOOKING"));
+                permissionList.add(new Permission("Get booked times", "/api/v1" + UrlConstant.Booking.GET_BOOKED_TIMES, "GET", "BOOKING"));
+
+                //Payment Module
+                permissionList.add(new Permission("Create payment", "/api/v1" + UrlConstant.Payment.CREATE_PAYMENT, "POST", "PAYMENT"));
+
+                //Pet service Module
+                permissionList.add(new Permission("Get all services", "/api/v1" + UrlConstant.PetService.GET_ALL_SERVICES, "GET", "PET_SERVICE"));
+                permissionList.add(new Permission("Get service detail", "/api/v1" + UrlConstant.PetService.GET_SERVICE, "GET", "PET_SERVICE"));
+                permissionList.add(new Permission("Search services", "/api/v1" + UrlConstant.PetService.SEARCH_SERVICES, "GET", "PET_SERVICE"));
+                permissionList.add(new Permission("Get services by category", "/api/v1" + UrlConstant.PetService.GET_SERVICES_BY_CATEGORY, "GET", "PET_SERVICE"));
+                permissionList.add(new Permission("Get top services", "/api/v1" + UrlConstant.PetService.GET_TOP_SERVICES, "GET", "PET_SERVICE"));
+                permissionList.add(new Permission("Get service recommendations", "/api/v1" + UrlConstant.PetService.GET_RECOMMENDATIONS, "GET", "PET_SERVICE"));
+
+
+                // Pet Service Review Module
+                permissionList.add(new Permission("Create a service review", "/api/v1" + UrlConstant.PetServiceReviews.CREATE_REVIEW, "POST", "SERVICE_REVIEW"));
+                permissionList.add(new Permission("Delete a service review", "/api/v1" + UrlConstant.PetServiceReviews.DELETE_REVIEW, "DELETE", "SERVICE_REVIEW"));
+                permissionList.add(new Permission("Get reviews by service", "/api/v1" + UrlConstant.PetServiceReviews.GET_SERVICE_REVIEWS, "GET", "SERVICE_REVIEW"));
+                permissionList.add(new Permission("Get average rating", "/api/v1" + UrlConstant.PetServiceReviews.GET_AVERAGE_RATING, "GET", "SERVICE_REVIEW"));
+                permissionList.add(new Permission("Get review count", "/api/v1" + UrlConstant.PetServiceReviews.GET_REVIEW_COUNT, "GET", "SERVICE_REVIEW"));
+
+                // Category Module
+                permissionList.add(new Permission("Get all categories", "/api/v1" + UrlConstant.Category.GET_CATEGORIES, "GET", "CATEGORY"));
+                permissionList.add(new Permission("Get category detail", "/api/v1" + UrlConstant.Category.GET_CATEGORY, "GET", "CATEGORY"));
+
+
+                // Menu Module
+                permissionList.add(new Permission("Get all menus", "/api/v1" + UrlConstant.Menu.GET_ALL_MENUS, "GET", "MENU"));
+                permissionList.add(new Permission("Search menus", "/api/v1" + UrlConstant.Menu.SEARCH_MENUS, "GET", "MENU"));
+                permissionList.add(new Permission("Get menus by category", "/api/v1" + UrlConstant.Menu.GET_MENUS_BY_CATEGORY, "GET", "MENU"));
+                permissionList.add(new Permission("Get menus tree", "/api/v1" + UrlConstant.Menu.GET_MENUS_TREE, "GET", "MENU"));
+                permissionList.add(new Permission("Get active menus", "/api/v1" + UrlConstant.Menu.GET_ACTIVE_MENUS, "GET", "MENU"));
+                permissionList.add(new Permission("Get menu detail", "/api/v1" + UrlConstant.Menu.GET_MENU, "GET", "MENU"));
+
+                // Product Module
+                permissionList.add(new Permission("Get all products", "/api/v1" + UrlConstant.Product.GET_PRODUCTS, "GET", "PRODUCT"));
+                permissionList.add(new Permission("Get product detail", "/api/v1" + UrlConstant.Product.GET_PRODUCT, "GET", "PRODUCT"));
+                permissionList.add(new Permission("Get product recommendations", "/api/v1" + UrlConstant.Product.GET_RECOMMENDATIONS, "GET", "PRODUCT"));
+
+                // Pet Service Image Module
+                permissionList.add(new Permission("Get service images", "/api/v1" + UrlConstant.PetServiceImages.GET_SERVICE_IMAGES, "GET", "PET_SERVICE_IMAGE"));
+
+
+
 
                 this.permissionRepository.saveAll(permissionList);
             }

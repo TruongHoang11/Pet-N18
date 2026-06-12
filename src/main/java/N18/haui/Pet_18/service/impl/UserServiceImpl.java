@@ -214,4 +214,10 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserDto(currentUser);
 
     }
+
+    @Override
+    public UserDto getUserProfile() {
+        User currentUser = this.getUserLogin();
+        return userMapper.toUserDto(currentUser);
+    }
 }

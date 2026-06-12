@@ -21,28 +21,20 @@ public class PermissionInterceptorConfiguration implements WebMvcConfigurer {
         String prefix = "/api/v1";
 
         String[] white_list = {
+                // 1. Tài nguyên tĩnh và hệ thống (Không bao giờ cần check quyền)
                 "/", "/index.html", "/favicon.ico",
-                // Authentication & forgot-password (public)
-                prefix + UrlConstant.Auth.REGISTER,
-                prefix + UrlConstant.Auth.LOGIN,
-
-
-                // Public product/service read endpoints (GET)
-                prefix + UrlConstant.Product.GET_PRODUCTS,
-                prefix + UrlConstant.Product.GET_PRODUCT,
-
-                prefix + UrlConstant.Payment.HANDLE_RETURN,
-
-                // Swagger / OpenAPI
+                "/storage/**", "/uploads/**", "/images/**",
+                "/actuator/health", "/actuator/info",
                 "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
 
-                // Static files / uploads
-                "/storage/**", "/uploads/**", "/images/**",
+                // 2. Auth (Cổng vào)
+                prefix + UrlConstant.Auth.REGISTER,
+                prefix + UrlConstant.Auth.LOGIN,
+                prefix + UrlConstant.ForgetPassword.PREFIX + "/**", // Bỏ chặn toàn bộ luồng quên mật khẩu
 
-                // Actuator health/info
-                "/actuator/health", "/actuator/info"
+                // 3. Các API public cố định
+                prefix + UrlConstant.Payment.HANDLE_RETURN // Callback từ VNPAY thường gọi không token
         };
-
         registry.addInterceptor(getPermissionInterceptor())
                 .excludePathPatterns(white_list); // ngoại trừ các API public không cần check quyền
     }

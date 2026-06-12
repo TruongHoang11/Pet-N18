@@ -41,4 +41,9 @@ public interface UserService {
     CommonResponseDto addAvatar(String userId, MultipartFile file) throws URISyntaxException, IOException;
 
     UserDto updateProfile(ReqUserUpdateProfile reqUserUpdateProfile);
+
+
+    UserDto getUserProfile();
+
+
 }

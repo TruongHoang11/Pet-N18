@@ -45,6 +45,11 @@ public class BookingController {
         return VsResponseUtil.success(HttpStatus.OK, bookingService.getAllBookings(pageable));
     }
 
+    @GetMapping(UrlConstant.Booking.GET_BOOKED_TIMES)
+    public ResponseEntity<?> getOccupiedBookingTimes() {
+        return VsResponseUtil.success(HttpStatus.OK, bookingService.getBookedTimeSlots());
+    }
+
     @PatchMapping(UrlConstant.Booking.CANCEL_BOOKING)
     public ResponseEntity<?> cancelBooking(@PathVariable Long id) {
         return VsResponseUtil.success(HttpStatus.OK, bookingService.cancelBooking(id));

@@ -47,7 +47,7 @@ public class PetController {
         CommonResponseDto commonResponseDto = petService.deletePet(id);
 
         return VsResponseUtil.success(HttpStatus.OK, commonResponseDto);
-
+        
     }
 
     @GetMapping(UrlConstant.Pet.GET_MY_PETS)

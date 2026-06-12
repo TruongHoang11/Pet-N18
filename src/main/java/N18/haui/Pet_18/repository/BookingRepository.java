@@ -8,15 +8,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpecificationExecutor<Booking> {
 
-    Page<Booking> findByUserId(Long userId, Pageable pageable);
+    Page<Booking> findByUserId(String userId, Pageable pageable);
 
-    Page<Booking> findByUserIdAndStatus(Long userId, BookingStatus status, Pageable pageable);
+    Page<Booking> findByUserIdAndStatus(String userId, BookingStatus status, Pageable pageable);
+
+    List<Booking> findByBookingDateAndStatusNot(LocalDate bookingDate, BookingStatus status);
+
+    List<Booking> findByStatusNotAndDeleteFlagFalseAndActiveFlagTrue(BookingStatus status);
 
     List<Booking> findByStartTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
 

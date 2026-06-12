@@ -3,6 +3,7 @@ package N18.haui.Pet_18.service;
 import N18.haui.Pet_18.domain.dto.pagination.ResultPaginationDto;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateService;
 import N18.haui.Pet_18.domain.dto.request.ReqUpdateService;
+import N18.haui.Pet_18.domain.dto.response.CommonResponseDto;
 import N18.haui.Pet_18.domain.dto.response.ServiceDto;
 import org.springframework.data.domain.Pageable;
 
@@ -14,6 +15,8 @@ public interface PetServiceService {
 
     ServiceDto updateService(ReqUpdateService req);
 
+    CommonResponseDto deleteService(Long id);
+
     ServiceDto getServiceById(Long id);
 
     ResultPaginationDto getAllServices(Pageable pageable);
@@ -22,7 +25,7 @@ public interface PetServiceService {
 
     ResultPaginationDto getServicesByCategory(Long categoryId, Pageable pageable);
 
-    void deleteService(Long id);
-
     List<ServiceDto> getTopServices(Integer limit);
+
+    List<Long> getRecommendedServiceIds(List<Long> serviceIds);
 }

@@ -20,4 +20,6 @@ public interface ProductService {
     ProductDto getProductById(Long id);
 
     ResultPaginationDto getAllProduct(List<String> filter, Pageable pageable);
+
+    List<Long> getRecommendedProductIds(List<Long> productIds);
 }

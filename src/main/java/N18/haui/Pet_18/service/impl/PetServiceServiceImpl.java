@@ -3,6 +3,7 @@ package N18.haui.Pet_18.service.impl;
 import N18.haui.Pet_18.domain.dto.pagination.ResultPaginationDto;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateService;
 import N18.haui.Pet_18.domain.dto.request.ReqUpdateService;
+import N18.haui.Pet_18.domain.dto.response.CommonResponseDto;
 import N18.haui.Pet_18.domain.dto.response.ServiceDto;
 import N18.haui.Pet_18.domain.entity.Category;
 import N18.haui.Pet_18.domain.entity.PetService;
@@ -12,6 +13,7 @@ import N18.haui.Pet_18.repository.CategoryRepository;
 import N18.haui.Pet_18.repository.PetServiceRepository;
 import N18.haui.Pet_18.service.PetServiceReviewService;
 import N18.haui.Pet_18.service.PetServiceService;
+import N18.haui.Pet_18.service.RecommendationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,7 @@ public class PetServiceServiceImpl implements PetServiceService {
     private final CategoryRepository categoryRepository;
     private final ServiceMapper serviceMapper;
     private final PetServiceReviewService reviewService;
+    private final RecommendationService recommendationService;
 
     @Override
     @Transactional
@@ -83,7 +86,7 @@ public class PetServiceServiceImpl implements PetServiceService {
     public ServiceDto getServiceById(Long id) {
         log.info("[SERVICE] Getting service with ID: {}", id);
 
-        PetService service = petServiceRepository.findById(id)
+        PetService service = petServiceRepository.findByIdAndDeleteFlagFalseAndActiveFlagTrue(id)
                 .orElseThrow(() -> new NotFoundException("[SERVICE] Service not found"));
 
         ServiceDto dto = serviceMapper.toDto(service);
@@ -95,7 +98,7 @@ public class PetServiceServiceImpl implements PetServiceService {
     public ResultPaginationDto getAllServices(Pageable pageable) {
         log.info("[SERVICE] Getting all services with pagination");
 
-        Page<PetService> page = petServiceRepository.findAll(pageable);
+        Page<PetService> page = petServiceRepository.findByDeleteFlagFalseAndActiveFlagTrue(pageable);
         List<ServiceDto> dtos = page.getContent().stream()
                 .map(service -> {
                     ServiceDto dto = serviceMapper.toDto(service);
@@ -111,7 +114,7 @@ public class PetServiceServiceImpl implements PetServiceService {
     public ResultPaginationDto searchServices(String keyword, Pageable pageable) {
         log.info("[SERVICE] Searching services with keyword: {}", keyword);
 
-        Page<PetService> page = petServiceRepository.findByNameContainingIgnoreCase(keyword, pageable);
+        Page<PetService> page = petServiceRepository.findByDeleteFlagFalseAndActiveFlagTrueAndNameContainingIgnoreCase(keyword, pageable);
         List<ServiceDto> dtos = page.getContent().stream()
                 .map(service -> {
                     ServiceDto dto = serviceMapper.toDto(service);
@@ -127,7 +130,7 @@ public class PetServiceServiceImpl implements PetServiceService {
     public ResultPaginationDto getServicesByCategory(Long categoryId, Pageable pageable) {
         log.info("[SERVICE] Getting services by category: {}", categoryId);
 
-        Page<PetService> page = petServiceRepository.findByCategoryId(categoryId, pageable);
+        Page<PetService> page = petServiceRepository.findByDeleteFlagFalseAndActiveFlagTrueAndCategoryId(categoryId, pageable);
         List<ServiceDto> dtos = page.getContent().stream()
                 .map(service -> {
                     ServiceDto dto = serviceMapper.toDto(service);
@@ -140,22 +143,24 @@ public class PetServiceServiceImpl implements PetServiceService {
     }
 
     @Override
-    @Transactional
-    public void deleteService(Long id) {
+    public CommonResponseDto deleteService(Long id) {
         log.info("[SERVICE] Deleting service with ID: {}", id);
 
         PetService service = petServiceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("[SERVICE] Service not found"));
 
-        petServiceRepository.delete(service);
-        log.info("[SERVICE] Service deleted successfully");
+        service.setDeleteFlag(true);
+        service.setActiveFlag(false);
+        petServiceRepository.save(service);
+        log.info("[SERVICE] Service marked as deleted");
+        return new CommonResponseDto(true, "Service deleted successfully");
     }
 
     @Override
     public List<ServiceDto> getTopServices(Integer limit) {
         log.info("[SERVICE] Getting top {} services", limit);
 
-        Page<PetService> page = petServiceRepository.findAll(
+        Page<PetService> page = petServiceRepository.findByDeleteFlagFalseAndActiveFlagTrue(
                 Pageable.ofSize(limit)
         );
 
@@ -166,6 +171,11 @@ public class PetServiceServiceImpl implements PetServiceService {
                     return dto;
                 })
                 .toList();
+    }
+
+    @Override
+    public List<Long> getRecommendedServiceIds(List<Long> serviceIds) {
+        return recommendationService.recommendServices(serviceIds);
     }
 
     private void enrichServiceDto(ServiceDto dto) {

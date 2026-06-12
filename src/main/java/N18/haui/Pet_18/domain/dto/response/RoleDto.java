@@ -10,7 +10,4 @@ public class RoleDto {
     private boolean activeFlag; // Trạng thái kích hoạt (kế thừa từ lớp Auditing)
 
     private List<PermissionDto> permissions;
-
-
-
 }

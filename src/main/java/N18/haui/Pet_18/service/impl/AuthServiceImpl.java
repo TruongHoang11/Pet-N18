@@ -125,8 +125,8 @@ public class AuthServiceImpl implements AuthService {
         registerUser.setName(reqRegister.getName());
         registerUser.setEmail(reqRegister.getEmail());
 
-        registerUser.setDateOfBirth(reqRegister.getDateOfBirth());
-        registerUser.setGender(GenderEnum.valueOf(reqRegister.getGender()));
+        // registerUser.setDateOfBirth(reqRegister.getDateOfBirth());
+        // registerUser.setGender(GenderEnum.valueOf(reqRegister.getGender()));
         registerUser.setPassword(passwordEncoder.encode(reqRegister.getPassword()));
         registerUser.setRole(roleRepository.findByNameAndDeleteFlagFalse(RoleConstant.USER).orElse(null));
         userRepository.save(registerUser);

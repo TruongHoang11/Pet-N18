@@ -7,6 +7,7 @@ import N18.haui.Pet_18.domain.entity.Order;
 import N18.haui.Pet_18.exception.BadRequestException;
 import N18.haui.Pet_18.exception.NotFoundException;
 import N18.haui.Pet_18.repository.OrderRepository;
+import N18.haui.Pet_18.repository.PaymentRepository;
 import N18.haui.Pet_18.util.VNPayUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -32,6 +33,7 @@ public class VNPayService {
     private final VNPayConfig vnPayConfig;
     private final VNPayUtil vnPayUtil;
     private final OrderRepository orderRepository;
+    private final PaymentRepository paymentRepository;
 
     public String createPaymentUrl(Long orderId, HttpServletRequest request) {
 
@@ -179,6 +181,7 @@ public class VNPayService {
             // Thanh toán thành công
             order.getPayment().setStatus(PaymentStatus.SUCCESS);
             order.getPayment().setTransactionId(transactionId);
+
             log.info("[VNPAY] Thanh toán thành công | Order ID: {}", orderId);
         } else {
             // Thanh toán thất bại
@@ -187,6 +190,7 @@ public class VNPayService {
         }
 
         orderRepository.save(order);
+        paymentRepository.save(order.getPayment());
         return "00".equals(responseCode) ? "SUCCESS" : "FAILED";
     }
 }

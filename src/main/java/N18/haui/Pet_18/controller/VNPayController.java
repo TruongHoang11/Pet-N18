@@ -24,7 +24,7 @@ public class VNPayController {
         String paymentUrl = vnPayService.createPaymentUrl(orderId, request);
         return ResponseEntity.ok(paymentUrl);
     }
-//
+
 //    @RequestMapping(
 //            value = UrlConstant.Payment.HANDLE_RETURN,
 //            method = {RequestMethod.GET, RequestMethod.POST}
@@ -34,7 +34,7 @@ public class VNPayController {
 //        String result = vnPayService.handleReturn(request);
 //        // Redirect sang FE
 //        if ("SUCCESS".equals(result)) {
-//            response.sendRedirect("http://localhost:3000/payment/success");
+//            response.sendRedirect("http://localhost:5173/);
 //        } else {
 //            response.sendRedirect("http://localhost:3000/payment/failed");
 //        }

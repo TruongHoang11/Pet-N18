@@ -2,6 +2,7 @@ package N18.haui.Pet_18.service.impl;
 
 import N18.haui.Pet_18.domain.dto.request.ReqSetThumbnailProduct;
 import N18.haui.Pet_18.domain.dto.response.CommonResponseDto;
+import N18.haui.Pet_18.domain.dto.response.ProductImageDto;
 import N18.haui.Pet_18.domain.dto.response.ResUploadFileResultDto;
 import N18.haui.Pet_18.domain.entity.Product;
 import N18.haui.Pet_18.domain.entity.ProductImage;
@@ -113,6 +114,22 @@ public class ProductImageServiceImpl implements ProductImageService {
         return new CommonResponseDto(true, "Thay đổi ảnh đại diện sản phẩm thành công");
     }
 
+    @Override
+    public List<ProductImageDto> getProductImages(Long productId) {
+        Product product = productRepository.findByIdAndDeleteFlagFalse(productId).orElseThrow(
+                () -> new NotFoundException("Product not found with id: " + productId)
+        );
+        return product.getProductImages().stream()
+                .map(image -> {
+                    ProductImageDto dto = new ProductImageDto();
+                    dto.setId(image.getId());
+                    dto.setImageUrl(image.getImageUrl());
+                    dto.setIsThumbnail(image.getIsThumbnail());
+                    dto.setProductId(image.getProduct().getId());
+                    return dto;
+                })
+                .toList();
+    }
 
 
 }

@@ -54,6 +54,7 @@ public class UrlConstant {
     public static final String ADD_IMAGES = PRE_FIX;
     public static final String DELETE_IMAGE = PRE_FIX + "/{id}";
     public static final String SET_MAIN_IMAGE = PRE_FIX + "/set-main-image";
+    public static final String GET_IMAGES = PRE_FIX + "/{productId}";
 
     private ProductImages() {
     }

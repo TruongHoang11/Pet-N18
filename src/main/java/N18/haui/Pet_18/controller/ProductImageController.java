@@ -5,6 +5,7 @@ import N18.haui.Pet_18.base.VsResponseUtil;
 import N18.haui.Pet_18.constant.UrlConstant;
 import N18.haui.Pet_18.domain.dto.request.ReqSetThumbnailProduct;
 import N18.haui.Pet_18.domain.dto.response.CommonResponseDto;
+import N18.haui.Pet_18.domain.dto.response.ProductImageDto;
 import N18.haui.Pet_18.service.ProductImageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,5 +45,11 @@ public class ProductImageController {
         CommonResponseDto response = productImageService.changeMainImage(reqSetMainImage);
 
         return VsResponseUtil.success(HttpStatus.OK, response);
+    }
+
+    @GetMapping(UrlConstant.ProductImages.GET_IMAGES)
+    public ResponseEntity<?> getImages(@PathVariable Long productId){
+        List<ProductImageDto> images = productImageService.getProductImages(productId);
+        return VsResponseUtil.success(HttpStatus.OK, images);
     }
 }

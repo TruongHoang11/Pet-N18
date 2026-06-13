@@ -18,9 +18,9 @@ spring:
     # username: ${MYSQL_USER:root}
     # password: ${MYSQL_PASSWORD:123456}
 
-    url: jdbc:mysql://localhost:3306/pet18
-    username: root
-    password: 123456
+    url: jdbc:mysql://localhost:3306/test_db?useUnicode=true&characterEncoding=UTF-8&characterSetResults=utf8mb4&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: hieuk
+    password: 123!@#123
 
     driver-class-name: com.mysql.cj.jdbc.Driver
 
@@ -28,10 +28,17 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+    defer-datasource-initialization: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:/data.sql
+      continue-on-error: true
+      encoding: UTF-8
 
 # Cấu hình mã hóa Token (JWT)
 jwt:

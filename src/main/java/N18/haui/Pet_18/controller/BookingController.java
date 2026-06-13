@@ -3,6 +3,7 @@ package N18.haui.Pet_18.controller;
 import N18.haui.Pet_18.base.RestApiV1;
 import N18.haui.Pet_18.base.VsResponseUtil;
 import N18.haui.Pet_18.constant.UrlConstant;
+import N18.haui.Pet_18.domain.dto.request.ReqBookingDateDto;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateBooking;
 import N18.haui.Pet_18.service.BookingService;
 import jakarta.validation.Valid;
@@ -45,9 +46,14 @@ public class BookingController {
         return VsResponseUtil.success(HttpStatus.OK, bookingService.getAllBookings(pageable));
     }
 
+    // @GetMapping(UrlConstant.Booking.GET_BOOKED_TIMES)
+    // public ResponseEntity<?> getOccupiedBookingTimes() {
+    // return VsResponseUtil.success(HttpStatus.OK,
+    // bookingService.getBookedTimeSlots());
+    // }
     @GetMapping(UrlConstant.Booking.GET_BOOKED_TIMES)
-    public ResponseEntity<?> getOccupiedBookingTimes() {
-        return VsResponseUtil.success(HttpStatus.OK, bookingService.getBookedTimeSlots());
+    public ResponseEntity<?> getOccupiedBookingTimes(@Valid ReqBookingDateDto reqDto) {
+        return VsResponseUtil.success(HttpStatus.OK, bookingService.getBookedTimeSlots(reqDto.getBookingDate()));
     }
 
     @PatchMapping(UrlConstant.Booking.CANCEL_BOOKING)

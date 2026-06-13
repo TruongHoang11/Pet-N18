@@ -167,11 +167,20 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(booking);
     }
 
+    // @Override
+    // public List<BookingTimeSlotDto> getBookedTimeSlots() {
+    //     log.info("[BOOKING] Getting occupied booking times");
+    //     List<Booking> bookings = bookingRepository.findByStatusNotAndDeleteFlagFalseAndActiveFlagTrue(BookingStatus.CANCELLED);
+    //     return bookings.stream()
+    //             .map(booking -> new BookingTimeSlotDto(booking.getStartTime(), booking.getEndTime()))
+    //             .sorted(Comparator.comparing(BookingTimeSlotDto::getStartTime))
+    //             .toList();
+    // }
     @Override
-    public List<BookingTimeSlotDto> getBookedTimeSlots() {
-        log.info("[BOOKING] Getting occupied booking times");
+    public List<BookingTimeSlotDto> getBookedTimeSlots(LocalDate bookingDate) {
+        log.info("[BOOKING] Getting occupied booking times for date: {}", bookingDate);
 
-        List<Booking> bookings = bookingRepository.findByStatusNotAndDeleteFlagFalseAndActiveFlagTrue(BookingStatus.CANCELLED);
+        List<Booking> bookings = bookingRepository.findByBookingDateAndStatusNot(bookingDate, BookingStatus.CANCELLED);
 
         return bookings.stream()
                 .map(booking -> new BookingTimeSlotDto(booking.getStartTime(), booking.getEndTime()))

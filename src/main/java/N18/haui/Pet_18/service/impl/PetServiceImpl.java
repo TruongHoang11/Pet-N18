@@ -76,9 +76,7 @@ public class PetServiceImpl implements PetService {
         User currentUser = userService.getUserLogin();
         Pet pet = getPetAndValidate(req.getId(), currentUser);
 
-        if(pet.getName().equals(req.getName())){
-            throw new BadRequestException("Pet name is the same as before.");
-        }
+
 
         pet.setName(req.getName());
         pet.setSpecie(req.getSpecie());

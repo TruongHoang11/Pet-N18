@@ -267,6 +267,17 @@ public class UrlConstant {
     }
 
 
+  public static class Permission {
+    private static final String PRE_FIX = "/permissions";
+
+    public static final String CREATE_PERMISSION = PRE_FIX;
+    public static final String UPDATE_PERMISSION = PRE_FIX;
+    public static final String GET_PERMISSION = PRE_FIX + "/{id}";
+    public static final String GET_ALL_PERMISSION = PRE_FIX;
+    public static final String DELETE_PERMISSION = PRE_FIX + "/{id}";
+
+    private Permission() {}
+  }
 
 
 

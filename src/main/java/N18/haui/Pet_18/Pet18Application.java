@@ -156,6 +156,14 @@ public class Pet18Application {
                 admin.setPassword(passwordEncoder.encode("admin@123"));
                 admin.setRole(role);
                 userRepository.save(admin);
+
+                Role role1 = roleRepository.findByNameAndDeleteFlagFalse(RoleConstant.USER).orElse(null);
+                User user = new User();
+                user.setName("User");
+                user.setEmail("user@gmail.com");
+                user.setPassword(passwordEncoder.encode("user@123"));
+                user.setRole(role1);
+                userRepository.save(user);
             }
         };
     }

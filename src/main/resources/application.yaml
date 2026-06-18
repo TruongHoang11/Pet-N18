@@ -13,16 +13,16 @@ spring:
         one-indexed-parameters: true
 
   datasource:
-    # URL kết nối MySQL, mặc định database tên là pet18
-    # url: ${MYSQL_URL:jdbc:mysql://localhost:3306/pet18?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
-    # username: ${MYSQL_USER:root}
-    # password: ${MYSQL_PASSWORD:123456}
+#     URL kết nối MySQL, mặc định database tên là pet18
+     url: ${MYSQL_URL:jdbc:mysql://localhost:3306/pet18?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+     username: ${MYSQL_USER:root}
+     password: ${MYSQL_PASSWORD:123456}
 
-    url: jdbc:mysql://localhost:3306/test_db?useUnicode=true&characterEncoding=UTF-8&characterSetResults=utf8mb4&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: hieuk
-    password: 123!@#123
+#    url: jdbc:mysql://localhost:3306/pet_dp?useUnicode=true&characterEncoding=UTF-8&characterSetResults=utf8mb4&serverTimezone=UTC&allowPublicKeyRetrieval=true
+#    username: root
+#    password: 123456
 
-    driver-class-name: com.mysql.cj.jdbc.Driver
+#    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     show-sql: true

@@ -131,7 +131,6 @@ public class Pet18Application {
                 permissionList.add(new Permission("Get service images", "/api/v1" + UrlConstant.PetServiceImages.GET_SERVICE_IMAGES, "GET", "PET_SERVICE_IMAGE"));
 
                 // Product Image Module
-
                 permissionList.add(new Permission("Get product images", "/api/v1" + UrlConstant.ProductImages.GET_IMAGES, "GET", "PRODUCT_IMAGE"));
 
 

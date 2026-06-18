@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,6 +30,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> {
 
                     // ========== AUTH & SECURITY MODULE (PUBLIC) ==========
@@ -42,6 +44,7 @@ public class SecurityConfiguration {
                     auth.requestMatchers(HttpMethod.GET, "/api/v1/services/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/api/v1/menus/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll();
+              //      auth.requestMatchers(HttpMethod.GET, "/api/v1/product-images/**").permitAll();
 
                     // Booking module
                     auth.requestMatchers(HttpMethod.GET, "/api/v1" + UrlConstant.Booking.GET_BOOKED_TIMES).permitAll();

@@ -1,32 +1,24 @@
 package N18.haui.Pet_18.service.impl;
 
 import N18.haui.Pet_18.constant.BookingStatus;
-import N18.haui.Pet_18.domain.entity.Pet;
 import N18.haui.Pet_18.domain.dto.pagination.ResultPaginationDto;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateBooking;
 import N18.haui.Pet_18.domain.dto.response.BookingDto;
 import N18.haui.Pet_18.domain.dto.response.BookingTimeSlotDto;
-import N18.haui.Pet_18.domain.entity.Booking;
-import N18.haui.Pet_18.domain.entity.BookingDetail;
-import N18.haui.Pet_18.domain.entity.PetService;
-import N18.haui.Pet_18.domain.entity.User;
+import N18.haui.Pet_18.domain.entity.*;
 import N18.haui.Pet_18.domain.mapper.BookingMapper;
 import N18.haui.Pet_18.exception.BadRequestException;
 import N18.haui.Pet_18.exception.NotFoundException;
-import N18.haui.Pet_18.repository.BookingDetailRepository;
-import N18.haui.Pet_18.repository.BookingRepository;
-import N18.haui.Pet_18.repository.PetRepository;
-import N18.haui.Pet_18.repository.PetServiceRepository;
-import N18.haui.Pet_18.repository.UserRepository;
+import N18.haui.Pet_18.repository.*;
 import N18.haui.Pet_18.service.BookingService;
 import lombok.AllArgsConstructor;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -82,6 +74,12 @@ public class BookingServiceImpl implements BookingService {
             }
 
             services.add(service);
+        }
+
+
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        for (PetService service : services) {
+            totalPrice = totalPrice.add(service.getBasePrice());
         }
         log.info("[BOOKING] All services validated. Total services: {}", services.size());
 

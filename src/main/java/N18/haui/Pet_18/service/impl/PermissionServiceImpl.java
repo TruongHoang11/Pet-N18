@@ -30,16 +30,17 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public Permission createPermission(Permission permission)  {
+    public PermissionDto createPermission(Permission permission)  {
         this.checkValidExistPermission(permission.getApiPath(), permission.getMethod(), permission.getModule());
 
-        return permissionRepository.save(permission);
+        return permissionMapper.toDto(permissionRepository.save(permission));
     }
 
     @Override
-    public Permission updatePermission(Permission permission) {
+    public PermissionDto updatePermission(Permission permission) {
         //check exist id
-        Permission permissionDB = this.fetchAPermission(permission.getId());
+        Permission permissionDB = permissionRepository.findById(permission.getId()).orElseThrow(()
+                -> new ConflictException("Permission with id = " + permission.getId() + " not found!"));
         // check exist by apiPath, method, module
         this.checkValidExistPermission(permission.getApiPath(), permission.getMethod(), permission.getModule());
 
@@ -50,14 +51,15 @@ public class PermissionServiceImpl implements PermissionService {
         //update
         permissionDB = permissionRepository.save(permissionDB);
 
-        return permissionDB;
+        return permissionMapper.toDto(permissionDB);
     }
 
     @Override
     public void deletePermission(Long id) {
         // de delete permission -> can vo bang permission and role xoa di cai rang buoc
         // co thang role nao chua cai skill xoa cai skill trong bang roi xoa skill o bang skill
-        Permission permissionDB = fetchAPermission(id);
+        Permission permissionDB = permissionRepository.findById(id).orElseThrow(()
+                -> new ConflictException("Permission with id = " + id + " not found!"));
         if(permissionDB.getRoles() != null){
             permissionDB.getRoles()
                     .forEach(role -> role.getPermissions().remove(permissionDB));
@@ -73,7 +75,6 @@ public class PermissionServiceImpl implements PermissionService {
         FilterProcessor.process(specificationBuilder, filter);
 
 
-
         // Thực thi query
         Page<Permission> pagePermission = permissionRepository.findAll(specificationBuilder.build(), pageable);
 
@@ -86,7 +87,7 @@ public class PermissionServiceImpl implements PermissionService {
         meta.setPages(pagePermission.getTotalPages());
         meta.setTotal(pagePermission.getTotalElements());
 
-        List<PermissionDto> result = permissionMapper.entityToDtoList(pagePermission.getContent());
+        List<PermissionDto> result = permissionMapper.toDtoList(pagePermission.getContent());
 
         resultPaginationDTO.setMeta(meta);
         resultPaginationDTO.setResult(result);
@@ -95,9 +96,9 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public Permission fetchAPermission(Long id) {
-        return permissionRepository.findById(id).orElseThrow(()
-                -> new ConflictException("Permission with id = " + id + " not found!"));
+    public PermissionDto fetchAPermission(Long id) {
+        return permissionMapper.toDto(permissionRepository.findById(id).orElseThrow(()
+                -> new ConflictException("Permission with id = " + id + " not found!")));
     }
 
 

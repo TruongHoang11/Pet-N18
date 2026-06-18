@@ -8,7 +8,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring",
         uses = PermissionMapper.class
-
 )
 public interface RoleMapper {
 

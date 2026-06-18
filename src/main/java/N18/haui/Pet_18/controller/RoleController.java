@@ -29,26 +29,25 @@ public class RoleController {
     @PutMapping("/roles")
 
     public ResponseEntity<?> updateRole(@Valid @RequestBody Role role){
-        return ResponseEntity.status(HttpStatus.CREATED).body(roleService.updateRole(role));
+        return ResponseEntity.status(HttpStatus.OK).body(roleService.updateRole(role));
     }
 
     @GetMapping("/roles")
-
     public ResponseEntity<?> fetchAllRoles(
             @RequestParam(value = "filter", required = false) List<String> filter,
             Pageable pageable
             ){
-        return ResponseEntity.status(HttpStatus.CREATED).body(roleService.fetchAllRole(filter, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(roleService.fetchAllRole(filter, pageable));
     }
 
     @GetMapping("/roles/{id}")
     public ResponseEntity<?> getARole(@PathVariable("id") Long id){
-        return ResponseEntity.status(HttpStatus.CREATED).body(roleService.fetchARole(id));
+        return ResponseEntity.status(HttpStatus.OK).body(roleService.fetchARole(id));
     }
 
     @DeleteMapping("/roles/{id}")
     public ResponseEntity<Void> deleteARole(@PathVariable("id") Long id){
         roleService.deleteRole(id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

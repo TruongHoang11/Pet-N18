@@ -1,7 +1,13 @@
 package N18.haui.Pet_18.domain.dto.response;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+
+@Getter
+@Setter
 public class RoleDto {
 
     private Long id;

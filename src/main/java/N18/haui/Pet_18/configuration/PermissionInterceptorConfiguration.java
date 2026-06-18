@@ -23,7 +23,7 @@ public class PermissionInterceptorConfiguration implements WebMvcConfigurer {
         String[] white_list = {
                 // 1. Tài nguyên tĩnh và hệ thống (Không bao giờ cần check quyền)
                 "/", "/index.html", "/favicon.ico",
-                "/storage/**", "/uploads/**", "/images/**",
+                "/storage/**", "/uploads/**", "/upload/**", "/images/**",
                 "/actuator/health", "/actuator/info",
                 "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
 

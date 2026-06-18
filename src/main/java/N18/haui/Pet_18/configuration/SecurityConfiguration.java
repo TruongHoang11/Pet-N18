@@ -44,7 +44,8 @@ public class SecurityConfiguration {
                     auth.requestMatchers(HttpMethod.GET, "/api/v1/services/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/api/v1/menus/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll();
-              //      auth.requestMatchers(HttpMethod.GET, "/api/v1/product-images/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/v1/product-images/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/upload/**").permitAll();
 
                     // Booking module
                     auth.requestMatchers(HttpMethod.GET, "/api/v1" + UrlConstant.Booking.GET_BOOKED_TIMES).permitAll();

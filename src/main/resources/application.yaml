@@ -52,8 +52,10 @@ jwt:
 # Cấu hình đường dẫn lưu trữ file upload
 hoang:
   upload-file:
+    # Dùng cho StaticResourcesWebConfiguration (Cần cấu hình file:/// để Spring hiểu)
+    resource-location: file:///D:/BackendJava2026/upload/
+    # Dùng cho FileServiceImpl (Đường dẫn thuần để Paths.get xử lý chính xác)
     base-uri: D:/BackendJava2026/upload/
-
 
 vnpay:
   tmn-code: R7MW0K0K

@@ -75,7 +75,7 @@ public class UserController {
             return VsResponseUtil.success(HttpStatus.OK, commonResponseDto);
 
 
-}
+    }
 
         @PutMapping(UrlConstant.User.UPDATE_PROFILE)
         public ResponseEntity<?> updateProfile(@RequestBody @Valid ReqUserUpdateProfile reqUserUpdateProfile){

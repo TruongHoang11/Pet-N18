@@ -21,13 +21,11 @@ public class RoleController {
     }
 
     @PostMapping("/roles")
-
     public ResponseEntity<?> createRole(@Valid @RequestBody Role role){
         return ResponseEntity.status(HttpStatus.CREATED).body(roleService.createRole(role));
     }
 
     @PutMapping("/roles")
-
     public ResponseEntity<?> updateRole(@Valid @RequestBody Role role){
         return ResponseEntity.status(HttpStatus.OK).body(roleService.updateRole(role));
     }

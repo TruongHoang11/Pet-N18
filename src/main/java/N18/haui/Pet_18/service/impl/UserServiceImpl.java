@@ -95,6 +95,7 @@ public class UserServiceImpl implements UserService {
         updateUser.setName(userUpdateDto.getName());
         updateUser.setDateOfBirth(userUpdateDto.getDateOfBirth());
         updateUser.setGender(GenderEnum.valueOf(userUpdateDto.getGender()));
+        updateUser.setAvatarUrl(userUpdateDto.getAvatarUrl());
 
 
         userRepository.save(updateUser);
@@ -192,13 +193,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public CommonResponseDto addAvatar(String userId, MultipartFile file) throws URISyntaxException, IOException {
 
-       User currentUser = this.getUserLogin();
+       User user  = userRepository.findById(userId).orElseThrow(
+               () -> new NotFoundException("User not found with id: " + userId)
+       );
+
 
         ResUploadFileResultDto.ResUploadFileDto uploadFileResultDto = fileService.uploadFile(file, "avatars");
         if(uploadFileResultDto != null){
             String avatarUrl = uploadFileResultDto.getFileName();
-            currentUser.setAvatarUrl(avatarUrl);
-            userRepository.save(currentUser);
+            user.setAvatarUrl(avatarUrl);
+            userRepository.save(user);
             return new CommonResponseDto(true, "Upload avatar success");
         }
         return new CommonResponseDto(false, "Không có ảnh nào được thêm (file lỗi hoặc trống");

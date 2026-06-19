@@ -32,5 +32,7 @@ public class UserUpdateDto extends UserDateAuditing {
     @EnumValue(name = "gender", enumClass = GenderEnum.class)
     private String gender;
 
+    private String avatarUrl;
+
     private Role role;
 }

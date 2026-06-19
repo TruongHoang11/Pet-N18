@@ -44,7 +44,7 @@ public class Pet18Application {
                 permissionList.add(new Permission("Update profile", "/api/v1" + UrlConstant.User.UPDATE_PROFILE, "PUT", "USER"));
                 permissionList.add(new Permission("Add avatar", "/api/v1" + UrlConstant.User.ADD_AVATAR, "POST", "USER"));
                 permissionList.add(new Permission("Logout", "/api/v1" + UrlConstant.Auth.LOGOUT, "POST", "AUTH"));
-
+                permissionList.add(new Permission("Get user profile", "/api/v1" + UrlConstant.User.GET_PROFILE, "GET", "USER"));
 
                 // Order Module
                 permissionList.add(new Permission("Create order from cart", "/api/v1" + UrlConstant.Order.CREATE_ORDER_FROM_CART, "POST", "ORDER"));

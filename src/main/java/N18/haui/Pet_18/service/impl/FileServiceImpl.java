@@ -33,6 +33,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
 
+    // Giới hạn 2MB (2 * 1024 * 1024 bytes)
+    private static final long MAX_FILE_SIZE = 4 * 1024 * 1024;
+
     @Value("${hoang.upload-file.base-uri}")
     private String baseUri;
     // Tối ưu: Đưa danh sách cấu hình ra ngoài làm hằng số để tránh khởi tạo lại trong vòng lặp
@@ -125,6 +128,10 @@ public class FileServiceImpl implements FileService {
         if (!isValidExtension) {
             return "Định dạng file không được hỗ trợ";
         }
+        // Kiểm tra kích thước
+        if (file.getSize() > MAX_FILE_SIZE) {
+            return "Dung lượng file vượt quá giới hạn cho phép (4MB)";
+        }
 
         // Kiểm tra MimeType
         String contentType = file.getContentType();
@@ -201,6 +208,8 @@ public class FileServiceImpl implements FileService {
             throw new FileUploadException(validationError);
         }
 
+
+
         // Save file
         String finalName = generateUniqueFileName(originalFileName);
         saveFileToStorage(file, folder, finalName);
@@ -226,6 +235,10 @@ public class FileServiceImpl implements FileService {
 
         if (!isValidExtension) {
             return "Định dạng file không được hỗ trợ";
+        }
+        // Kiểm tra kích thước
+        if (file.getSize() > MAX_FILE_SIZE) {
+            return "Dung lượng file vượt quá giới hạn cho phép (4MB)";
         }
 
         // Kiểm tra MimeType

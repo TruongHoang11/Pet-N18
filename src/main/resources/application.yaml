@@ -6,6 +6,11 @@ spring:
   application:
     name: Pet
 
+  servlet:
+    multipart:
+      max-file-size: 4MB
+      max-request-size: 12MB
+
   # Cấu hình phân trang (Pageable)
   data:
     web:
@@ -25,20 +30,20 @@ spring:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
     defer-datasource-initialization: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
-  sql:
-    init:
-      mode: always
-      data-locations: classpath:/data.sql
-      continue-on-error: true
-      encoding: UTF-8
+        format_sql: false
+#  sql:
+#    init:
+#      mode: always
+#      data-locations: classpath:/data.sql
+#      continue-on-error: true
+#      encoding: UTF-8
 
 # Cấu hình mã hóa Token (JWT)
 jwt:

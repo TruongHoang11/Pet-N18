@@ -26,6 +26,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+
     @GetMapping(UrlConstant.User.GET_USER)
     public ResponseEntity<?> getUser(@PathVariable String id){
             return VsResponseUtil.success(HttpStatus.OK,userService.getUserById(id) );

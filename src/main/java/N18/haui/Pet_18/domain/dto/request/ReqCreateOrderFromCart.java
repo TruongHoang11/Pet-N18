@@ -1,6 +1,7 @@
 package N18.haui.Pet_18.domain.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import N18.haui.Pet_18.constant.PaymentMethod;
+import N18.haui.Pet_18.validator.annotation.EnumValue;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class ReqCreateOrderFromCart {
     @NotNull(message = "Address ID is required")
     private Long addressId;
 
-    @NotBlank(message = "Payment method is required")
-    private String paymentMethod;
+    @NotNull(message = "Payment method is required")
+    @EnumValue(name = "paymentMethod", enumClass = PaymentMethod.class)
+    private PaymentMethod paymentMethod;
 }

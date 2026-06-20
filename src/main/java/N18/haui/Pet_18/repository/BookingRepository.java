@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpecificationExecutor<Booking> {
@@ -28,4 +29,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpec
     Page<Booking> findByStatus(BookingStatus status, Pageable pageable);
 
     Long countByStatus(BookingStatus status);
+
+    Optional<Booking> findByOrderId(Long orderId);
 }

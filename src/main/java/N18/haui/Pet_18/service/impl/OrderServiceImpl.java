@@ -1,9 +1,6 @@
 package N18.haui.Pet_18.service.impl;
 
-import N18.haui.Pet_18.constant.OrderStatus;
-import N18.haui.Pet_18.constant.PaymentStatus;
-import N18.haui.Pet_18.constant.RoleConstant;
-import N18.haui.Pet_18.constant.TypeInventory;
+import N18.haui.Pet_18.constant.*;
 import N18.haui.Pet_18.domain.dto.pagination.ResultPaginationDto;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateOrderBuyNow;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateOrderFromCart;
@@ -39,6 +36,7 @@ import java.util.Map;
 
 import static N18.haui.Pet_18.constant.OrderStatus.CANCELLED;
 import static N18.haui.Pet_18.constant.OrderStatus.DELIVERED;
+import static N18.haui.Pet_18.constant.PaymentMethod.COD;
 
 @Service
 @RequiredArgsConstructor
@@ -140,23 +138,8 @@ public class OrderServiceImpl implements OrderService {
         // 9. Save Order → cascade tự save OrderDetail + StatusHistory + Payment
         orderRepository.save(order);
 
-
-        // // 10. Trừ tồn kho → ghi InventoryTransaction
-//        for (OrderDetail orderDetail : order.getOrderDetails()) {
-//            Inventory inventory = inventoryRepository.findByProductId(orderDetail.getProduct().getId()).get();
-//            Integer oldQuantity = inventory.getQuantity();
-//            Integer newQuantity = oldQuantity - orderDetail.getQuantity();
-//            inventory.setQuantity(newQuantity);
-//            inventoryRepository.save(inventory);
-//
-//            InventoryTransaction inventoryTransaction = new InventoryTransaction();
-//            inventoryTransaction.setInventory(inventory);
-//            inventoryTransaction.setQuantity(orderDetail.getQuantity());
-//            inventoryTransaction.setType(TypeInventory.EXPORT);
-//            inventoryTransaction.setNote("Export product to order");
-//            inventoryTransactionRepository.save(inventoryTransaction);
-//
-//        }
+        //tru ton kho
+        deductInventoryIfCod(order);
 
         // 11. Xóa giỏ hàng
         cart.getCartItems().removeAll(selectedItems);
@@ -244,24 +227,35 @@ public class OrderServiceImpl implements OrderService {
         // 11. Save Order → cascade tự save OrderDetail + StatusHistory + Payment
         orderRepository.save(order);
         log.info("[ORDER] Tạo đơn hàng mua ngay thành công | Order ID: {}", order.getId());
-
-
-        //Trừ tồn kho → ghi InventoryTransaction
-//        Integer oldQty = inventory.getQuantity();
-//        Integer newQty = oldQty - req.getQuantity();
-//        inventory.setQuantity(newQty);
-//        inventoryRepository.save(inventory);
-//
-//        InventoryTransaction inventoryTransaction = new InventoryTransaction();
-//        inventoryTransaction.setInventory(inventory);
-//        inventoryTransaction.setQuantity(req.getQuantity());
-//        inventoryTransaction.setType(TypeInventory.EXPORT);
-//        inventoryTransaction.setNote("Export product to order");
-//        inventoryTransactionRepository.save(inventoryTransaction);
-
-
+        deductInventoryIfCod(order);
 
         return orderMapper.toDto(order);
+    }
+
+    // Helper - trừ kho nếu là COD
+    private void deductInventoryIfCod(Order order) {
+        if (!COD.equals(order.getPayment().getPaymentMethod())) {
+            return; // VNPay → không trừ ở đây, trừ ở handleReturn
+        }
+
+        for (OrderDetail orderDetail : order.getOrderDetails()) {
+            Inventory inventory = inventoryRepository.findByProductId(orderDetail.getProduct().getId())
+                    .orElseThrow(() -> new NotFoundException("[ORDER] Sản phẩm không tồn tại trong kho"));
+
+            Integer oldQuantity = inventory.getQuantity();
+            Integer newQuantity = oldQuantity - orderDetail.getQuantity();
+            inventory.setQuantity(newQuantity);
+            inventoryRepository.save(inventory);
+
+            InventoryTransaction inventoryTransaction = new InventoryTransaction();
+            inventoryTransaction.setInventory(inventory);
+            inventoryTransaction.setQuantity(orderDetail.getQuantity());
+            inventoryTransaction.setType(TypeInventory.EXPORT);
+            inventoryTransaction.setNote("Export product to order (COD)");
+            inventoryTransactionRepository.save(inventoryTransaction);
+        }
+
+        log.info("[ORDER] Đã trừ kho cho đơn COD | Order ID: {}", order.getId());
     }
 
     @Override
@@ -343,30 +337,31 @@ public class OrderServiceImpl implements OrderService {
             throw new BadRequestException("[ORDER] Chỉ được hủy đơn hàng ở trạng thái PENDING");
         }
 
+// chỉ hoàn kho nếu là COD (vì chỉ COD mới trừ lúc tạo đơn)
+        if (order.getPayment().getPaymentMethod() == PaymentMethod.COD) {
+            for (OrderDetail orderDetail : order.getOrderDetails()) {
+                Inventory inventory = inventoryRepository.findByProductId(orderDetail.getProduct().getId())
+                        .orElseThrow(() -> new NotFoundException("[ORDER] Sản phẩm không tồn tại"));
 
-        // 4. Cộng lại tồn kho → ghi InventoryTransaction
-        for (OrderDetail orderDetail : order.getOrderDetails()) {
-            Inventory inventory = inventoryRepository.findByProductId(orderDetail.getProduct().getId()).orElseThrow(
-                    () -> new NotFoundException("[ORDER] Sản phẩm không tồn tại")
-            );
-            Integer oldQuantity = inventory.getQuantity();
-            Integer newQuantity = oldQuantity + orderDetail.getQuantity();
-            inventory.setQuantity(newQuantity);
-            inventoryRepository.save(inventory);
+                Integer oldQuantity = inventory.getQuantity();
+                Integer newQuantity = oldQuantity + orderDetail.getQuantity();
+                inventory.setQuantity(newQuantity);
+                inventoryRepository.save(inventory);
 
-            InventoryTransaction inventoryTransaction = new InventoryTransaction();
-            inventoryTransaction.setInventory(inventory);
-            inventoryTransaction.setQuantity(orderDetail.getQuantity());
-            inventoryTransaction.setType(TypeInventory.IMPORT);
-            inventoryTransaction.setNote("Import product from cancel order");
-            inventoryTransactionRepository.save(inventoryTransaction);
+                InventoryTransaction inventoryTransaction = new InventoryTransaction();
+                inventoryTransaction.setInventory(inventory);
+                inventoryTransaction.setQuantity(orderDetail.getQuantity());
+                inventoryTransaction.setType(TypeInventory.IMPORT);
+                inventoryTransaction.setNote("Import product from cancel order");
+                inventoryTransactionRepository.save(inventoryTransaction);
 
-            log.info("[INVENTORY] Nhập kho do hủy đơn hàng | Product ID: {} | {} → {}",
-                    orderDetail.getProduct().getId(), oldQuantity, newQuantity);
+                log.info("[INVENTORY] Nhập kho do hủy đơn hàng COD | Product ID: {} | {} → {}",
+                        orderDetail.getProduct().getId(), oldQuantity, newQuantity);
+            }
         }
-
+// Nếu là VNPAY và đang PENDING → chưa từng trừ kho, không cần hoàn
         // 5. Update status Order → CANCELLED
-        order.setStatus(CANCELLED);
+        order.setStatus(OrderStatus.CANCELLED);
 
 
         // 6. Update PaymentStatus

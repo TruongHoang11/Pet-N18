@@ -1,19 +1,13 @@
 package N18.haui.Pet_18.service;
 
 import N18.haui.Pet_18.configuration.VNPayConfig;
-import N18.haui.Pet_18.constant.OrderStatus;
-import N18.haui.Pet_18.constant.PaymentStatus;
-import N18.haui.Pet_18.constant.TypeInventory;
-import N18.haui.Pet_18.domain.entity.Inventory;
-import N18.haui.Pet_18.domain.entity.InventoryTransaction;
-import N18.haui.Pet_18.domain.entity.Order;
-import N18.haui.Pet_18.domain.entity.OrderDetail;
+import N18.haui.Pet_18.constant.*;
+import N18.haui.Pet_18.domain.dto.response.PaymentStatusDto;
+import N18.haui.Pet_18.domain.entity.*;
 import N18.haui.Pet_18.exception.BadRequestException;
+import N18.haui.Pet_18.exception.ForbiddenException;
 import N18.haui.Pet_18.exception.NotFoundException;
-import N18.haui.Pet_18.repository.InventoryRepository;
-import N18.haui.Pet_18.repository.InventoryTransactionRepository;
-import N18.haui.Pet_18.repository.OrderRepository;
-import N18.haui.Pet_18.repository.PaymentRepository;
+import N18.haui.Pet_18.repository.*;
 import N18.haui.Pet_18.util.VNPayUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -40,6 +34,8 @@ public class VNPayService {
     private final VNPayUtil vnPayUtil;
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
+    private final BookingRepository bookingRepository;
+    private final UserService userService;
 
     private final InventoryRepository inventoryRepository;
     private final InventoryTransactionRepository inventoryTransactionRepository;
@@ -186,40 +182,105 @@ public class VNPayService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy đơn hàng"));
 
-        if ("00".equals(responseCode)) {
+        if (order.getPayment().getStatus() != PaymentStatus.PENDING) {
+            log.warn("[VNPAY] Đơn hàng đã được xử lý trước đó | Order ID: {}", orderId);
+            return order.getPayment().getStatus() == PaymentStatus.SUCCESS ? "SUCCESS" : "FAILED";
+        }
+
+        boolean isSuccess = "00".equals(responseCode);
+        boolean stockShortage = false; //cờ đánh dấu thiếu hàng
+        if (isSuccess) {
             // Thanh toán thành công
             order.getPayment().setStatus(PaymentStatus.SUCCESS);
             order.getPayment().setTransactionId(transactionId);
-            order.getPayment().setPaymentMethod("BANKING_VNPAY");
+            order.getPayment().setPaymentMethod(PaymentMethod.VNPAY);
             order.setStatus(OrderStatus.PROCESSING);
 
+            if (order.getOrderType() == OrderType.PRODUCT) {
+                for (OrderDetail orderDetail : order.getOrderDetails()) {
+                    Inventory inventory = inventoryRepository.findByProductId(orderDetail.getProduct().getId()).orElseThrow(
+                            () -> new NotFoundException("[ORDER] Sản phẩm không tồn tại trong kho")
+                    );
+                    Integer oldQuantity = inventory.getQuantity();
+                    if (oldQuantity < orderDetail.getQuantity()) {
+                        // ✅ Không throw - chỉ đánh dấu và dừng vòng lặp
+                        stockShortage = true;
+                        log.warn("[VNPAY] Tồn kho không đủ | Product ID: {} | Order ID: {}",
+                                orderDetail.getProduct().getId(), orderId);
+                        break;
+                    }
 
-            for (OrderDetail orderDetail : order.getOrderDetails()) {
-                Inventory inventory = inventoryRepository.findByProductId(orderDetail.getProduct().getId()).orElseThrow(
-                        () -> new NotFoundException("[ORDER] Sản phẩm không tồn tại trong kho")
-                );
-                Integer oldQuantity = inventory.getQuantity();
-                Integer newQuantity = oldQuantity - orderDetail.getQuantity();
-                inventory.setQuantity(newQuantity);
-                inventoryRepository.save(inventory);
+                    Integer newQuantity = oldQuantity - orderDetail.getQuantity();
+                    inventory.setQuantity(newQuantity);
+                    inventoryRepository.save(inventory);
 
-                InventoryTransaction inventoryTransaction = new InventoryTransaction();
-                inventoryTransaction.setInventory(inventory);
-                inventoryTransaction.setQuantity(orderDetail.getQuantity());
-                inventoryTransaction.setType(TypeInventory.EXPORT);
-                inventoryTransaction.setNote("Export product to order after successful payment");
-                inventoryTransactionRepository.save(inventoryTransaction);
+                    InventoryTransaction inventoryTransaction = new InventoryTransaction();
+                    inventoryTransaction.setInventory(inventory);
+                    inventoryTransaction.setQuantity(orderDetail.getQuantity());
+                    inventoryTransaction.setType(TypeInventory.EXPORT);
+                    inventoryTransaction.setNote("Export product to order after successful payment");
+                    inventoryTransactionRepository.save(inventoryTransaction);
+                }
             }
-
-            log.info("[VNPAY] Thanh toán thành công | Order ID: {}", orderId);
+            if (stockShortage) {
+                order.setStatus(OrderStatus.CANCELLED);
+                order.getPayment().setStatus(PaymentStatus.REFUNDED);
+                log.warn("[VNPAY] Đơn hàng ID: {} bị hủy do thiếu tồn kho, cần Admin hoàn tiền thủ công", orderId);
+            } else {
+                log.info("[VNPAY] Thanh toán thành công | Order ID: {}", orderId);
+            }
         } else {
             // Thanh toán thất bại
             order.getPayment().setStatus(PaymentStatus.FAILED);
             log.warn("[VNPAY] Thanh toán thất bại | Order ID: {} | Code: {}", orderId, responseCode);
         }
-
         orderRepository.save(order);
-        paymentRepository.save(order.getPayment());
-        return "00".equals(responseCode) ? "SUCCESS" : "FAILED";
+
+        if (order.getOrderType() == OrderType.BOOKING) {
+            boolean bookingConfirmed = isSuccess; // booking không bị ảnh hưởng bởi stockShortage
+            bookingRepository.findByOrderId(order.getId()).ifPresent(booking -> {
+                if (bookingConfirmed) {
+                    booking.setStatus(BookingStatus.CONFIRMED);
+                    log.info("[VNPAY] Booking ID: {} đã được xác nhận", booking.getId());
+                } else {
+                    booking.setStatus(BookingStatus.CANCELLED);
+                    log.warn("[VNPAY] Booking ID: {} bị hủy do thanh toán thất bại", booking.getId());
+                }
+                bookingRepository.save(booking);
+            });
+        }
+
+        if (stockShortage) {
+            return "STOCK_SHORTAGE";
+        }
+        return isSuccess ? "SUCCESS" : "FAILED";
+    }
+
+
+    public PaymentStatusDto getPaymentStatus(Long orderId) {
+        log.info("[PAYMENT] Tra cứu trạng thái thanh toán | Order ID: {}", orderId);
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy đơn hàng ID: " + orderId));
+
+        // Check owner - tránh user A xem được đơn của user B
+        User currentUser = userService.getUserLogin();
+        if (!order.getUser().getId().equals(currentUser.getId())) {
+            throw new ForbiddenException("You are not allowed to perform this action");
+        }
+
+        PaymentStatusDto dto = new PaymentStatusDto();
+        dto.setOrderId(order.getId());
+        dto.setOrderStatus(order.getStatus());
+        dto.setTotalAmount(order.getTotalAmount());
+        dto.setTransactionId(order.getPayment() != null ? order.getPayment().getTransactionId() : null);
+
+        if (order.getPayment() != null) {
+            dto.setPaymentStatus(order.getPayment().getStatus());
+            dto.setTransactionId(order.getPayment().getTransactionId());
+            dto.setPaymentMethod(order.getPayment().getPaymentMethod().name());
+        }
+
+        return dto;
     }
 }

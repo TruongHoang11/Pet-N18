@@ -27,4 +27,6 @@ public class BookingDto {
     private List<BookingDetailDto> bookingDetails;
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
+
+    private Long orderId;
 }

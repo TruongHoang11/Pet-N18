@@ -245,6 +245,7 @@ public class UrlConstant {
     // Admin
     public static final String CREATE_PAYMENT = PRE_FIX + "/create";
     public static final String HANDLE_RETURN = PRE_FIX + "/return";
+    public static final String GET_PAYMENT_STATUS = PRE_FIX + "/status";
 
 
     private Payment() {

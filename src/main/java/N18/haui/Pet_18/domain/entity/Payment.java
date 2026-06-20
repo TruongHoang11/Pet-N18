@@ -1,6 +1,7 @@
 package N18.haui.Pet_18.domain.entity;
 
 
+import N18.haui.Pet_18.constant.PaymentMethod;
 import N18.haui.Pet_18.constant.PaymentStatus;
 import N18.haui.Pet_18.domain.dto.common.UserDateAuditing;
 import jakarta.persistence.*;
@@ -25,7 +26,9 @@ public class Payment extends UserDateAuditing {
     @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY)
     private Order order;
 
-    private String paymentMethod; // VD: MOMO, VNPAY, CASH
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method")
+    private PaymentMethod paymentMethod; // VD: MOMO, VNPAY, CASH
 
     @Column (name = "transaction_id", unique = true)
     private String transactionId; // Lưu mã từ bên thứ 3 trả về

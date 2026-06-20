@@ -14,6 +14,7 @@ public interface BookingMapper {
     @Mapping(target = "userName", source = "user.name")
     @Mapping(target = "petName", source = "pet.name")
     @Mapping(target = "petId", source = "pet.id")
+    @Mapping(target = "orderId", source = "order.id")
     BookingDto toDto(Booking booking);
 
     List<BookingDto> toDtos(List<Booking> bookings);

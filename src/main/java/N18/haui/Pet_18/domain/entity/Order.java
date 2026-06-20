@@ -2,6 +2,7 @@ package N18.haui.Pet_18.domain.entity;
 
 
 import N18.haui.Pet_18.constant.OrderStatus;
+import N18.haui.Pet_18.constant.OrderType;
 import N18.haui.Pet_18.domain.dto.common.FlagUserDateAuditing;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -51,6 +52,11 @@ public class Order extends FlagUserDateAuditing {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_type")
+    private OrderType orderType = OrderType.PRODUCT;
 
 
 }

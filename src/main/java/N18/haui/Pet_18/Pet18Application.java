@@ -14,6 +14,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
+@EnableScheduling
 @SpringBootApplication
 public class Pet18Application {
 	private final RoleRepository roleRepository;
@@ -92,7 +94,7 @@ public class Pet18Application {
 
                 //Payment Module
                 permissionList.add(new Permission("Create payment", "/api/v1" + UrlConstant.Payment.CREATE_PAYMENT, "POST", "PAYMENT"));
-
+                permissionList.add(new Permission("Get payment status", "/api/v1" + UrlConstant.Payment.GET_PAYMENT_STATUS, "GET", "PAYMENT"));;
                 //Pet service Module
                 permissionList.add(new Permission("Get all services", "/api/v1" + UrlConstant.PetService.GET_ALL_SERVICES, "GET", "PET_SERVICE"));
                 permissionList.add(new Permission("Get service detail", "/api/v1" + UrlConstant.PetService.GET_SERVICE, "GET", "PET_SERVICE"));

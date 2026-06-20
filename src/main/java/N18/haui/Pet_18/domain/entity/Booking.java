@@ -2,6 +2,7 @@ package N18.haui.Pet_18.domain.entity;
 
 import N18.haui.Pet_18.constant.BookingStatus;
 import N18.haui.Pet_18.domain.dto.common.FlagUserDateAuditing;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,11 +11,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-// import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Getter
 @Setter
@@ -58,7 +56,10 @@ public class Booking extends FlagUserDateAuditing {
     @JsonIgnore
     private List<BookingDetail> bookingDetails; // Danh sách dịch vụ trong lịch hẹn đó
 
-
+    // liên kết với Order để thanh toán
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
 
 }

@@ -1,6 +1,9 @@
 package N18.haui.Pet_18.service.impl;
 
 import N18.haui.Pet_18.constant.BookingStatus;
+import N18.haui.Pet_18.constant.OrderStatus;
+import N18.haui.Pet_18.constant.OrderType;
+import N18.haui.Pet_18.constant.PaymentStatus;
 import N18.haui.Pet_18.domain.dto.pagination.ResultPaginationDto;
 import N18.haui.Pet_18.domain.dto.request.ReqCreateBooking;
 import N18.haui.Pet_18.domain.dto.response.BookingDto;
@@ -39,6 +42,7 @@ public class BookingServiceImpl implements BookingService {
     private final PetRepository petRepository;
     private final UserRepository userRepository;
     private final BookingMapper bookingMapper;
+    private final OrderRepository orderRepository;
 
     @Override
     @Transactional
@@ -122,6 +126,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setUser(user);
         booking.setBookingDate(req.getBookingDate());
         booking.setStartTime(req.getStartTime());
+        booking.setActualPrice(totalPrice);
         booking.setEndTime(req.getEndTime());
         booking.setStatus(BookingStatus.PENDING);  // Set initial status as PENDING
         if (req.getPetId() != null) {
@@ -147,12 +152,32 @@ public class BookingServiceImpl implements BookingService {
         bookingDetailRepository.saveAll(bookingDetails);
         log.info("[BOOKING] Booking details saved. Count: {}", bookingDetails.size());
 
-        // ============ RETURN RESPONSE ============
-        savedBooking.setBookingDetails(bookingDetails);  // Set services for mapping
+// ============ TẠO ORDER + PAYMENT ĐI KÈM ============
+        Payment payment = new Payment();
+        payment.setStatus(PaymentStatus.PENDING);
+        payment.setAmount(totalPrice);
+
+        Order order = new Order();
+        order.setUser(user);
+        order.setTotalAmount(totalPrice);
+        order.setStatus(OrderStatus.PENDING);
+        order.setOrderType(OrderType.BOOKING);
+        order.setPayment(payment);
+        order.setOrderDetails(new ArrayList<>()); // booking không có orderDetails
+
+        orderRepository.save(order);
+        log.info("[BOOKING] Order đi kèm đã tạo | Order ID: {}", order.getId());
+
+        savedBooking.setOrder(order);
+        bookingRepository.save(savedBooking);
+
+// ============ RETURN RESPONSE ============
+        savedBooking.setBookingDetails(bookingDetails);
         BookingDto response = bookingMapper.toDto(savedBooking);
         log.info("[BOOKING] Booking created successfully with ID: {}", savedBooking.getId());
 
         return response;
+
     }
 
     @Override

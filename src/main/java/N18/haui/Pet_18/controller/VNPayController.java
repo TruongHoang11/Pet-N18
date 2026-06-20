@@ -6,10 +6,7 @@ import N18.haui.Pet_18.service.VNPayService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @RestApiV1
 @RequiredArgsConstructor
@@ -49,4 +46,26 @@ public ResponseEntity<String> handleReturn(HttpServletRequest request) {
 
     return ResponseEntity.ok(result);
 }
+//
+//    @RequestMapping(
+//            value = UrlConstant.Payment.HANDLE_RETURN,
+//            method = {RequestMethod.GET, RequestMethod.POST}
+//    )
+//    public void handleReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        String result = vnPayService.handleReturn(request);
+//
+//        String redirectUrl = switch (result) {
+//            case "SUCCESS" -> "http://localhost:5173/payment/success";
+//            case "STOCK_SHORTAGE" -> "http://localhost:5173/payment/stock-shortage";
+//            case "INVALID_SIGNATURE" -> "http://localhost:5173/payment/invalid";
+//            default -> "http://localhost:5173/payment/failed";
+//        };
+//
+//        response.sendRedirect(redirectUrl);
+//    }
+
+    @GetMapping(UrlConstant.Payment.GET_PAYMENT_STATUS)
+    public ResponseEntity<?> getPaymentStatus(@RequestParam Long orderId) {
+        return ResponseEntity.ok(vnPayService.getPaymentStatus(orderId));
+    }
 }

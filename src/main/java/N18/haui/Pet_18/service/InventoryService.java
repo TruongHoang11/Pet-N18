@@ -25,6 +25,9 @@ public interface InventoryService {
     InventoryDto getInventoryByProductId(Long productId);
 
 
+    ResultPaginationDto getInventoryList(List<String> filter, Pageable pageable);
+
+
     ResultPaginationDto getInventoryTransactionHistory(List<String> filter, Pageable pageable);
 
 

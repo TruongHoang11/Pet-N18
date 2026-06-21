@@ -203,7 +203,7 @@ public class VNPayService {
                     );
                     Integer oldQuantity = inventory.getQuantity();
                     if (oldQuantity < orderDetail.getQuantity()) {
-                        // ✅ Không throw - chỉ đánh dấu và dừng vòng lặp
+                        //  Không throw - chỉ đánh dấu và dừng vòng lặp
                         stockShortage = true;
                         log.warn("[VNPAY] Tồn kho không đủ | Product ID: {} | Order ID: {}",
                                 orderDetail.getProduct().getId(), orderId);

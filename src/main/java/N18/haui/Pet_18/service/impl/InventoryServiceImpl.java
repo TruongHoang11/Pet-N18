@@ -183,6 +183,29 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
+    public ResultPaginationDto getInventoryList(List<String> filter, Pageable pageable) {
+        SpecificationBuilder<Inventory> specificationBuilder = new SpecificationBuilder<>();
+
+        FilterProcessor.process(specificationBuilder,filter);
+
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createdDate").descending());
+
+        Page<Inventory> page = inventoryRepository.findAll(specificationBuilder.build(), pageable);
+
+        ResultPaginationDto resultPaginationDto = new ResultPaginationDto();
+        ResultPaginationDto.Meta meta = new ResultPaginationDto.Meta();
+        meta.setPage(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
+        meta.setPages(page.getTotalPages());
+        meta.setTotal(page.getTotalElements());
+
+        List<InventoryDto> dtoList = inventoryMapper.toListInventory(page.getContent());
+        resultPaginationDto.setMeta(meta);
+        resultPaginationDto.setResult(dtoList);
+        return resultPaginationDto;
+    }
+
+    @Override
     public ResultPaginationDto getInventoryTransactionHistory(List<String> filter, Pageable pageable) {
         SpecificationBuilder<InventoryTransaction> specificationBuilder = new SpecificationBuilder<>();
         FilterProcessor.process(specificationBuilder,filter);

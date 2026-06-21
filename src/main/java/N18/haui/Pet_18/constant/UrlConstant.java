@@ -67,7 +67,7 @@ public class UrlConstant {
     public static final String ADJUST_PRODUCT = PRE_FIX + "/adjust";
     public static final String GET_INVENTORY_BY_PRODUCT_ID = PRE_FIX + "/{id}";
     public static final String GET_INVENTORY_TRANSACTION_HISTORY = PRE_FIX + "/transaction-history";
-
+    public static final String GET_INVENTORY_LIST = PRE_FIX;
     private Inventory() {
     }
   }

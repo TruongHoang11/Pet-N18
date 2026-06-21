@@ -27,8 +27,9 @@ public class InventoryController {
     @GetMapping(UrlConstant.Inventory.GET_INVENTORY_BY_PRODUCT_ID)
     public ResponseEntity<?> getInventoryByProductId(@PathVariable Long id){
         return VsResponseUtil.success(HttpStatus.OK,inventoryService.getInventoryByProductId(id));
-
     }
+
+
 
     @PostMapping(UrlConstant.Inventory.IMPORT_PRODUCT)
     public ResponseEntity<?> importInventory(@RequestBody @Valid ReqInventoryProduct reqInventoryProduct)  {
@@ -58,5 +59,14 @@ public class InventoryController {
 
         return VsResponseUtil.success(HttpStatus.OK, inventoryService.getInventoryTransactionHistory(filter,pageable) );
 
+    }
+
+
+    @GetMapping(UrlConstant.Inventory.GET_INVENTORY_LIST)
+    public ResponseEntity<?> getInventoryList(
+            @RequestParam(value = "filter", required = false) List<String> filter,
+            Pageable pageable){
+
+        return VsResponseUtil.success(HttpStatus.OK, inventoryService.getInventoryList(filter,pageable) );
     }
 }

@@ -60,6 +60,4 @@ public class Booking extends FlagUserDateAuditing {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
     private Order order;
-
-
 }

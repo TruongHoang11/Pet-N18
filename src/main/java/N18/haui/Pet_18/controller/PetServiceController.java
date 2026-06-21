@@ -70,7 +70,7 @@ public class PetServiceController {
         return VsResponseUtil.success(HttpStatus.OK, petServiceService.getTopServices(limit));
     }
 
-    @PostMapping(UrlConstant.PetService.GET_RECOMMENDATIONS)
+    @GetMapping(UrlConstant.PetService.GET_RECOMMENDATIONS)
     public ResponseEntity<?> recommendServices(@Valid @RequestBody ReqRecommendationDto req) {
         return VsResponseUtil.success(HttpStatus.OK, new ResRecommendationDto(petServiceService.getRecommendedServiceIds(req.getItemIds())));
     }

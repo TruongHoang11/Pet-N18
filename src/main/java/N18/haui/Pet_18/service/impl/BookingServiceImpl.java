@@ -10,6 +10,8 @@ import N18.haui.Pet_18.domain.dto.response.BookingDto;
 import N18.haui.Pet_18.domain.dto.response.BookingTimeSlotDto;
 import N18.haui.Pet_18.domain.entity.*;
 import N18.haui.Pet_18.domain.mapper.BookingMapper;
+import N18.haui.Pet_18.domain.specification.FilterProcessor;
+import N18.haui.Pet_18.domain.specification.SpecificationBuilder;
 import N18.haui.Pet_18.exception.BadRequestException;
 import N18.haui.Pet_18.exception.NotFoundException;
 import N18.haui.Pet_18.repository.*;
@@ -18,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -245,10 +248,18 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public ResultPaginationDto getAllBookings(Pageable pageable) {
+    public ResultPaginationDto getAllBookings(List<String> filter, Pageable pageable) {
         log.info("[BOOKING] Getting all bookings with pagination");
+        SpecificationBuilder<Booking> specificationBuilder = new SpecificationBuilder<>();
+        FilterProcessor.process(specificationBuilder, filter);
 
-        Page<Booking> page = bookingRepository.findAll(pageable);
+        Specification<Booking> spec = specificationBuilder.build();
+        Specification<Booking> softDelete = (root, query, criteriaBuilder) -> {
+            return criteriaBuilder.equal(root.get("deleteFlag"), false);
+        };
+        Specification<Booking> finalSpec = spec == null ? softDelete : spec.and(softDelete);
+
+        Page<Booking> page = bookingRepository.findAll(finalSpec, pageable);
         List<BookingDto> dtos = page.getContent().stream()
                 .map(bookingMapper::toDto)
                 .toList();
@@ -309,7 +320,7 @@ public class BookingServiceImpl implements BookingService {
         response.setResult(data);
 
         ResultPaginationDto.Meta meta = new ResultPaginationDto.Meta();
-        meta.setPage(page.getNumber());
+        meta.setPage(page.getNumber() + 1);
         meta.setPageSize(page.getSize());
         meta.setPages(page.getTotalPages());
         meta.setTotal(page.getTotalElements());

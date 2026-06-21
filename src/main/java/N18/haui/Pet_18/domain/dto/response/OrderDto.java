@@ -2,6 +2,7 @@ package N18.haui.Pet_18.domain.dto.response;
 
 
 import N18.haui.Pet_18.constant.OrderStatus;
+import N18.haui.Pet_18.constant.OrderType;
 import N18.haui.Pet_18.constant.PaymentMethod;
 import N18.haui.Pet_18.constant.PaymentStatus;
 import lombok.Getter;
@@ -25,4 +26,5 @@ public class OrderDto {
     private PaymentMethod  paymentMethod;        // Phương thức thanh toán (MOMO, VNPAY, CASH)
     private List<OrderDetailDto> orderDetails;  // Danh sách các mặt hàng chi tiết bên trong đơn
     private LocalDateTime createdDate;          // Ngày giờ đặt hàng thành công
+    private OrderType orderType;
 }

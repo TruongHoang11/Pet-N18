@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestApiV1
 @RequiredArgsConstructor
 public class BookingController {
@@ -42,8 +44,10 @@ public class BookingController {
     }
 
     @GetMapping(UrlConstant.Booking.GET_ALL_BOOKINGS)
-    public ResponseEntity<?> getAllBookings(Pageable pageable) {
-        return VsResponseUtil.success(HttpStatus.OK, bookingService.getAllBookings(pageable));
+    public ResponseEntity<?> getAllBookings(
+            @RequestParam(required = false) List<String> filter,
+            Pageable pageable) {
+        return VsResponseUtil.success(HttpStatus.OK, bookingService.getAllBookings(filter, pageable));
     }
 
     // @GetMapping(UrlConstant.Booking.GET_BOOKED_TIMES)

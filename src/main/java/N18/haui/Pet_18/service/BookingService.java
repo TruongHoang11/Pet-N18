@@ -19,7 +19,7 @@ public interface BookingService {
 
     ResultPaginationDto getBookingsByStatus(String status, Pageable pageable);
 
-    ResultPaginationDto getAllBookings(Pageable pageable);
+    ResultPaginationDto getAllBookings(List<String> filter,Pageable pageable);
 
 //    List<BookingTimeSlotDto> getBookedTimeSlots();
     List<BookingTimeSlotDto> getBookedTimeSlots(LocalDate bookingDate);

@@ -8,6 +8,8 @@ import N18.haui.Pet_18.domain.dto.response.ServiceDto;
 import N18.haui.Pet_18.domain.entity.Category;
 import N18.haui.Pet_18.domain.entity.PetService;
 import N18.haui.Pet_18.domain.mapper.ServiceMapper;
+import N18.haui.Pet_18.domain.specification.FilterProcessor;
+import N18.haui.Pet_18.domain.specification.SpecificationBuilder;
 import N18.haui.Pet_18.exception.NotFoundException;
 import N18.haui.Pet_18.repository.CategoryRepository;
 import N18.haui.Pet_18.repository.PetServiceRepository;
@@ -18,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,10 +98,19 @@ public class PetServiceServiceImpl implements PetServiceService {
     }
 
     @Override
-    public ResultPaginationDto getAllServices(Pageable pageable) {
+    public ResultPaginationDto getAllServices(List<String> filter, Pageable pageable) {
         log.info("[SERVICE] Getting all services with pagination");
+        SpecificationBuilder<PetService> specificationBuilder = new SpecificationBuilder<>();
+        FilterProcessor.process(specificationBuilder, filter);
+        Specification<PetService> spec = specificationBuilder.build();
+        Specification<PetService> activeSpec = (root, query, criteriaBuilder) ->
+                criteriaBuilder.and(
+                        criteriaBuilder.isFalse(root.get("deleteFlag")),
+                        criteriaBuilder.isTrue(root.get("activeFlag"))
+                );
+        Specification<PetService> finalSpec = spec == null ? activeSpec : spec.and(activeSpec);
 
-        Page<PetService> page = petServiceRepository.findByDeleteFlagFalseAndActiveFlagTrue(pageable);
+        Page<PetService> page = petServiceRepository.findAll(finalSpec, pageable);
         List<ServiceDto> dtos = page.getContent().stream()
                 .map(service -> {
                     ServiceDto dto = serviceMapper.toDto(service);

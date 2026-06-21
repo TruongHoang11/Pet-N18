@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestApiV1
 @RequiredArgsConstructor
 public class PetServiceController {
@@ -37,8 +39,10 @@ public class PetServiceController {
     }
 
     @GetMapping(UrlConstant.PetService.GET_ALL_SERVICES)
-    public ResponseEntity<?> getAllServices(Pageable pageable) {
-        return VsResponseUtil.success(HttpStatus.OK, petServiceService.getAllServices(pageable));
+    public ResponseEntity<?> getAllServices(
+            @RequestParam(required = false) List<String> filter,
+            Pageable pageable) {
+        return VsResponseUtil.success(HttpStatus.OK, petServiceService.getAllServices(filter,pageable));
     }
 
     @GetMapping(UrlConstant.PetService.SEARCH_SERVICES)

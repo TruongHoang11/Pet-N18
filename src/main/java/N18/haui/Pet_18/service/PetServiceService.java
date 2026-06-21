@@ -19,7 +19,7 @@ public interface PetServiceService {
 
     ServiceDto getServiceById(Long id);
 
-    ResultPaginationDto getAllServices(Pageable pageable);
+    ResultPaginationDto getAllServices(List<String> filter, Pageable pageable);
 
     ResultPaginationDto searchServices(String keyword, Pageable pageable);
 
